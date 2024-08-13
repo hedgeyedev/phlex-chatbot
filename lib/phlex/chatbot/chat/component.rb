@@ -4,6 +4,10 @@ require_relative "header"
 require_relative "input"
 require_relative "messages"
 
+require_relative "../chatbot_message_template"
+require_relative "../chatbot_thinking_template"
+require_relative "../user_message_template"
+
 module Phlex
   module Chatbot
     module Chat
@@ -15,6 +19,10 @@ module Phlex
 
         def view_template
           div(class: "pcb pcb__chat-container", data_controller: "chat-form chat-messages") { chat_content! }
+
+          render Phlex::Chatbot::ChatbotMessageTemplate.new
+          render Phlex::Chatbot::ChatbotThinkingTemplate.new
+          render Phlex::Chatbot::UserMessageTemplate.new
         end
 
         private

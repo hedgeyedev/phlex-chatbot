@@ -9,7 +9,7 @@ module Phlex
         def initialize(user_name: nil, from_system: false)
           @from_system   = from_system
           @user_name     = user_name || (from_system ? AI_ASST : "Visitor")
-          @user_nickname = user_name == AI_ASST ? "AI" : user_name.split.map(&:chr).join.upcase
+          @user_nickname = @user_name == AI_ASST ? "AI" : @user_name.split.map(&:chr).join.upcase
         end
 
         def view_template

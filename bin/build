@@ -4,7 +4,7 @@ IFS=$'\n\t'
 set -vx
 
 if [[ "$WATCH" == "" ]]; then
-  npx postcss src/main.css -o ./src/phlex_chatbot.css
+  npx postcss src/main.css -o ./dist/phlex_chatbot.css
 else
-  npx postcss src/main.css --verbose -o ./src/phlex_chatbot.css --watch
+  npx postcss src/main.css --verbose -o ./dist/phlex_chatbot.css --watch
 fi

@@ -1,24 +1,37 @@
 # frozen_string_literal: true
 
+require_relative "user_identifier"
+
 module Phlex
   module Chatbot
     module Chat
       class Message < Phlex::HTML
-        def initialize(message:)
+        attr_reader :message
+
+        def initialize(message:, with_status_indicator: false)
           @message = message
+          @with_status_indicator = with_status_indicator
         end
 
         def view_template
           message_class = message[:from_user] ? "pcb__message__user" : "pcb__message__bot"
-          div class: "pcb__message #{message_class}" do
+          message_class += " pcb__message__bot-loading" if @with_status_indicator
+
+          div(class: "pcb__message #{message_class}") do
+            div(class: "pcb__status-indicator") { "Retrieving relevant documents" } if @with_status_indicator
+
             render UserIdentifier.new(from_system: !message[:from_user], user_name: message[:user_name])
 
-            div class: "pcb__message-content" do
-              plain message[:content]
+            div class: "pcb__message__content" do
+              if block_given?
+                yield
+              else
+                plain message[:content]
+              end
             end
 
             if message[:sources]
-              div class: "pcb__message-footnotes" do
+              div class: "pcb__message__footnotes" do
                 message[:sources].each_with_index do |source, index|
                   span class: "pcb__footnote",
                        data_action: "click->chat-messages#showSource",
@@ -29,7 +42,7 @@ module Phlex
               end
             end
             unless message[:from_user]
-              div class: "pcb__message-actions" do
+              div class: "pcb__message__actions" do
                 button data_action: "click->chat-messages#copyMessage" do
                   plain "Copy"
                 end

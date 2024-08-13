@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "message"
+
 module Phlex
   module Chatbot
     module Chat

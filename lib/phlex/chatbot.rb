@@ -32,11 +32,11 @@ module Phlex
       private
 
       def chat_css
-        File.read(File.expand_path("../../src/phlex_chatbot.css", __dir__))
+        File.read(File.expand_path("../../dist/phlex_chatbot.css", __dir__))
       end
 
       def chat_js
-        File.read(File.expand_path("../../src/phlex_chatbot.js", __dir__))
+        File.read(File.expand_path("../../dist/phlex_chatbot.js", __dir__))
       end
 
       def determine_content
