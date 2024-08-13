@@ -9,16 +9,14 @@ module Hedgeye
         end
 
         def view_template
-          header class: "bg-white border-b border-gray-200 p-4 flex justify-between items-center" do
-            h1 class: "text-xl font-bold" do
-              plain "AI Chat"
-            end
+          header class: "hcb__header" do
+            h1 { "AI Chat" }
             div class: "flex space-x-2" do
-              button class: "px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm", data_action: "click->chat-messages#clearChat" do
+              button data_action: "click->chat-messages#clearChat" do
                 plain "Clear chat"
               end
               if @full_page
-                button class: "px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm", data_action: "click->chat-messages#toggleDarkMode" do
+                button data_action: "click->chat-messages#toggleDarkMode" do
                   plain "Toggle dark mode"
                 end
               end

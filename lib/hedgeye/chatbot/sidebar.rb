@@ -8,7 +8,7 @@ module Hedgeye
       end
 
       def view_template
-        div class: "chat-sidebar" do
+        div class: "hcb__chat-sidebar" do
           render Chat::Component.new(messages: @messages, full_page: false)
         end
       end

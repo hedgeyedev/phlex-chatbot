@@ -1,7 +1,7 @@
 module.exports = {
   content: [
-    "./src/**/*.{html,js,css}",
+    "./src/**/*.{html,js,css,scss}",
     './lib/**/*.rb',
   ],
-  plugins: []
+  plugins: [],
 }

@@ -8,7 +8,7 @@ module Hedgeye
       end
 
       def view_template
-        div class: "chat-status" do
+        div class: "hcb__chat-status" do
           plain @status
         end
       end

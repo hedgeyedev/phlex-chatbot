@@ -9,50 +9,34 @@ module Hedgeye
         end
 
         def view_template
-          div class: "chat-messages flex flex-col space-y-4 p-4",
+          div class: "hcb__chat-messages",
               data_chat_form_target: "messagesContainer",
-              data_controller: "chat-messages",
-              style: "max-height: 70vh; overflow-y: auto;" do
+              data_controller: "chat-messages" do
             @messages.each do |message|
-              message_class = message[:from_user] ? "self-end bg-green-100" : "self-start bg-gray-100"
-              div class: "message min-w-[200px] max-w-[70%] p-3 rounded-lg #{message_class}" do
-                div class: "flex items-center mb-2" do
-                  if message[:from_user]
-                    div class: "w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold mr-2" do
-                      plain "UN"
-                    end
-                    span class: "font-semibold" do
-                      plain "User Name"
-                    end
-                  else
-                    div class: "w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold mr-2" do
-                      plain "AI"
-                    end
-                    span class: "font-semibold" do
-                      plain "AI Assistant"
-                    end
-                  end
-                end
-                div class: "message-content" do
+              message_class = message[:from_user] ? "hcb__message__user" : "hcb__message__bot"
+              div class: "hcb__message #{message_class}" do
+                render UserIdentifier.new(from_system: !message[:from_user], user_name: message[:user_name])
+                div class: "hcb__message-content" do
                   plain message[:content]
                 end
+
                 if message[:sources]
-                  div class: "message-footnotes mt-2 text-sm text-gray-500" do
+                  div class: "hcb__message-footnotes" do
                     message[:sources].each_with_index do |source, index|
-                      span class: "footnote cursor-pointer text-blue-500 hover:text-blue-700 mr-2",
-                          data_action: "click->chat-messages#showSource",
-                          data_chat_messages_source_value: source.to_json do
+                      span class: "hcb__footnote",
+                           data_action: "click->chat-messages#showSource",
+                           data_chat_messages_source_value: source.to_json do
                         plain "[#{index + 1}]"
                       end
                     end
                   end
                 end
-                if !message[:from_user]
-                  div class: "message-actions mt-2 flex space-x-2" do
-                    button class: "text-sm text-gray-500 hover:text-gray-700", data_action: "click->chat-messages#copyMessage" do
+                unless message[:from_user]
+                  div class: "hcb__message-actions" do
+                    button data_action: "click->chat-messages#copyMessage" do
                       plain "Copy"
                     end
-                    button class: "text-sm text-gray-500 hover:text-gray-700", data_action: "click->chat-messages#regenerateResponse" do
+                    button data_action: "click->chat-messages#regenerateResponse" do
                       plain "Regenerate"
                     end
                   end

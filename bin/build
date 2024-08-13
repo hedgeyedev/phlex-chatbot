@@ -4,7 +4,7 @@ IFS=$'\n\t'
 set -vx
 
 if [[ "$WATCH" == "" ]]; then
-  npx tailwindcss build -o ./src/hedgeye_chatbot.css
+  npx postcss src/main.css -o ./src/hedgeye_chatbot.css
 else
-  npx tailwindcss build -o ./src/hedgeye_chatbot.css --watch
+  npx postcss src/main.css --verbose -o ./src/hedgeye_chatbot.css --watch
 fi

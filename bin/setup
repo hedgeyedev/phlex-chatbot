@@ -4,5 +4,5 @@ IFS=$'\n\t'
 set -vx
 
 bundle install
-npm install -D tailwindcss postcss autoprefixer
+npm install -D tailwindcss postcss autoprefixer postcss-import postcss-cli
 npx tailwindcss init

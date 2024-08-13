@@ -22,7 +22,7 @@ module Hedgeye
               end
             end
           else
-            div class: "chat-container flex flex-col h-full",
+            div class: "hedgeye-chatbot hcb__chat-container",
                 data_controller: "chat-form chat-messages" do
               render_chat_content
             end
@@ -33,7 +33,7 @@ module Hedgeye
 
         def render_chat_content
           render Header.new(@full_page)
-          div class: "flex-grow overflow-y-auto" do
+          div class: "hcb__messages" do
             render Messages.new(messages: @messages)
           end
           render Input.new
