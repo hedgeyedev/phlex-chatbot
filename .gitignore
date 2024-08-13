@@ -11,3 +11,5 @@
 .rspec_status
 node_modules
 dist
+
+.idea/

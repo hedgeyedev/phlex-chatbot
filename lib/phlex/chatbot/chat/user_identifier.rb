@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Hedgeye
+module Phlex
   module Chatbot
     module Chat
       class UserIdentifier < Phlex::HTML
@@ -13,11 +13,11 @@ module Hedgeye
         end
 
         def view_template
-          div class: "hcb__user-identifier" do
-            div(**classes("hcb__user-identifier-avatar", from_system?: "hcb__user-identifier-avatar__bot", from_user?: "hcb__user-identifier-avatar__user")) do
+          div class: "pcb__user-identifier" do
+            div(**classes("pcb__user-identifier-avatar", from_system?: "pcb__user-identifier-avatar__bot", from_user?: "pcb__user-identifier-avatar__user")) do
               @user_nickname
             end
-            span(class: "hcb__user-identifier-name") { @user_name }
+            span(class: "pcb__user-identifier-name") { @user_name }
           end
         end
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Hedgeye
+module Phlex
   module Chatbot
     class Sidebar < Phlex::HTML
       def initialize(messages:)
@@ -8,7 +8,7 @@ module Hedgeye
       end
 
       def view_template
-        div class: "hcb__chat-sidebar" do
+        div class: "pcb__chat-sidebar" do
           render Chat::Component.new(messages: @messages, full_page: false)
         end
       end

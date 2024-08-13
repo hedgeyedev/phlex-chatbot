@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Hedgeye
+module Phlex
   module Chatbot
     module Chat
       class UserIdentifierTemplate < Phlex::HTML

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Hedgeye
+module Phlex
   module Chatbot
     class StatusComponent < Phlex::HTML
       def initialize(status:)
@@ -8,7 +8,7 @@ module Hedgeye
       end
 
       def view_template
-        div class: "hcb__chat-status" do
+        div class: "pcb__chat-status" do
           plain @status
         end
       end

@@ -2,13 +2,13 @@
 
 require_relative "chatbot/version"
 
-module Hedgeye
+module Phlex
   # Chatbot module
   module Chatbot
     class Error < StandardError; end
 
-    autoload :Chat, "hedgeye/chatbot/chat"
-    autoload :StatusComponent, "hedgeye/chatbot/status_component"
+    autoload :Chat, "phlex/chatbot/chat"
+    autoload :StatusComponent, "phlex/chatbot/status_component"
 
     # Rack app to serve the chatbot assets
     class Web
@@ -32,11 +32,11 @@ module Hedgeye
       private
 
       def chat_css
-        File.read(File.expand_path("../../src/hedgeye_chatbot.css", __dir__))
+        File.read(File.expand_path("../../src/phlex_chatbot.css", __dir__))
       end
 
       def chat_js
-        File.read(File.expand_path("../../src/hedgeye_chatbot.js", __dir__))
+        File.read(File.expand_path("../../src/phlex_chatbot.js", __dir__))
       end
 
       def determine_content

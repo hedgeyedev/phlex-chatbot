@@ -2,16 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-.hedgeye-chatbot {
+.pcb {
   @apply bg-white text-black dark:bg-gray-900 dark:text-white;
 }
 
-.hcb__chat-container {
+.pcb__chat-container {
   @apply flex flex-col h-full;
   @apply dark:bg-gray-800;
 }
 
-.hcb__chat-input {
+.pcb__chat-input {
   @apply mt-2 p-4 bg-gray-100 border-t border-gray-200;
   @apply dark:bg-gray-800 dark:border-gray-700;
 
@@ -32,16 +32,16 @@
   }
 }
 
-.hcb__chat-messages {
+.pcb__chat-messages {
   @apply flex flex-col space-y-4 p-4;
   @apply max-h-[70vh] overflow-y-auto;
 }
 
-.hcb__footnote {
+.pcb__footnote {
   @apply cursor-pointer text-blue-500 hover:text-blue-700 mr-2;
 }
 
-.hcb__header {
+.pcb__header {
   @apply bg-white border-b border-gray-200 p-4 flex justify-between items-center;
   @apply dark:bg-gray-900 dark:border-gray-700;
 
@@ -55,7 +55,7 @@
   }
 }
 
-.hcb__loading-line {
+.pcb__loading-line {
   @apply mb-2 h-3 bg-slate-200 rounded;
   animation: loadingPulse 1.5s infinite;
 
@@ -72,12 +72,12 @@
   }
 }
 
-.hcb__message {
+.pcb__message {
   @apply mb-4 p-3 rounded-lg inline-block min-w-[200px] max-w-[70%] transition-opacity duration-500 ease-in-out;
   @apply dark:text-gray-800;
 }
 
-.hcb__message__actions {
+.pcb__message__actions {
   @apply mt-2 flex space-x-2;
 
   button {
@@ -85,66 +85,66 @@
   }
 }
 
-.hcb__message__bot {
+.pcb__message__bot {
   @apply bg-gray-100 self-start;
 }
 
-.hcb__message__bot-loading {
+.pcb__message__bot-loading {
   @apply bg-gray-100 h-10;
   animation: pulse 1.5s infinite;
 }
 
-.hcb__message__bot-appear {
+.pcb__message__bot-appear {
   animation: fadeIn 0.5s;
 }
 
-.hcb__message__content {
+.pcb__message__content {
   @apply text-sm;
 }
 
-.hcb__message__footnotes {
+.pcb__message__footnotes {
   @apply mt-2 text-sm text-gray-500;
 }
 
-.hcb__message__user {
+.pcb__message__user {
   @apply bg-green-100 self-end;
 }
 
-.hcb__messages {
+.pcb__messages {
   @apply flex-grow overflow-y-auto p-4;
 }
 
-.hcb__source-modal {
+.pcb__source-modal {
   @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center;
 }
 
-.hcb__source-modal-content {
+.pcb__source-modal-content {
   @apply bg-white p-6 rounded-lg max-w-lg w-full;
 }
 
-.hcb__status-indicator {
+.pcb__status-indicator {
   @apply text-xs text-gray-500 mb-1;
   @apply dark:text-gray-800;
   transition: opacity 0.3s ease-in-out;
 }
 
-.hcb__user-identifier {
+.pcb__user-identifier {
   @apply flex items-center mb-2;
 }
 
-.hcb__user-identifier-avatar {
+.pcb__user-identifier-avatar {
   @apply w-8 h-8 rounded-full flex items-center justify-center text-white font-bold mr-2;
 }
 
-.hcb__user-identifier-avatar__bot {
+.pcb__user-identifier-avatar__bot {
   @apply bg-blue-500;
 }
 
-.hcb__user-identifier-avatar__user {
+.pcb__user-identifier-avatar__user {
   @apply bg-green-500;
 }
 
-.hcb__user-identifier-name {
+.pcb__user-identifier-name {
   @apply font-semibold dark:text-gray-800;
 }
 

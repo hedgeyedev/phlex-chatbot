@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Hedgeye
+module Phlex
   module Chatbot
     module Chat
       class Header < Phlex::HTML
@@ -9,7 +9,7 @@ module Hedgeye
         end
 
         def view_template
-          header class: "hcb__header" do
+          header class: "pcb__header" do
             h1 { "AI Chat" }
             div class: "flex space-x-2" do
               button data_action: "click->chat-messages#clearChat" do

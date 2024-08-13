@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require_relative "lib/hedgeye/chatbot/version"
+require_relative "lib/phlex/chatbot/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "hedgeye-chatbot"
-  spec.version = Hedgeye::Chatbot::VERSION
+  spec.name = "phlex-chatbot"
+  spec.version = Phlex::Chatbot::VERSION
   spec.authors = ["Hedgeye Risk Management, LLC"]
   spec.email = ["developers@hedgeye.com"]
 
   spec.summary = "summarize it"
   spec.description = "Write a longer description or delete this line."
-  spec.homepage = "https://github.com/hedgeyedev/hedgeye-chatbot"
+  spec.homepage = "https://github.com/hedgeyedev/phlex-chatbot"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2"
 

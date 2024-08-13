@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-module Hedgeye
+module Phlex
   module Chatbot
     module Chat
       class Input < Phlex::HTML
         def view_template
-          div class: "hcb__chat-input" do
+          div class: "pcb__chat-input" do
             form data_action: "submit->chat-form#submit" do
               textarea placeholder: "Type your message...",
                        rows: "1",

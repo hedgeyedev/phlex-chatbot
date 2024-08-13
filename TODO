@@ -1,1 +1,1 @@
-- create rake task to import stylesheets to containing app (e.g. rails hedgeye-chatbot:install)
+- create rake task to import stylesheets to containing app (e.g. rails phlex-chatbot:install)
