@@ -99,7 +99,20 @@ module Phlex
       def post
         case path
         when %r{/bot/([a-fA-F0-9]+$)}
-          ok = Bot.send_event(Regexp.last_match(1), :message, data: { message: @env["rack.input"].read })
+          data = @env["rack.input"].read
+          ok = true
+          id = Regexp.last_match(1)
+
+          Thread.start do
+            Bot.send_event(id, :status, data: { message: "Retrieving relevant documents" })
+            sleep(1)
+            Bot.send_event(id, :status, data: { message: "Reranking results" })
+            sleep(1)
+            Bot.send_event(id, :status, data: { message: "Thinking" })
+            sleep(1)
+            Bot.send_event(id, :message, data: JSON(data))
+          end
+
           if ok
             [200, { "content-type" => "text/plain" }, ["ok"]]
           else
