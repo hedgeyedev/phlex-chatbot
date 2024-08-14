@@ -1,5 +1,4 @@
 require_relative "user_identifier"
-require_relative "../source_modal_template"
 
 module Phlex
   module Chatbot
@@ -42,22 +41,17 @@ module Phlex
 
         def render_sources
           div class: "pcb__message__footnotes" do
-            message[:sources].each_with_index do |source, index|
-              span class: "pcb__footnote",
-                   data_action: "click->chat-messages#showSource",
-                   data_chat_messages_index_param: index,
-                   data_chat_messages_message_index_param: @message_index do
-                plain "[#{index + 1}]"
+            message[:sources].each.with_index(1) do |source, index|
+              a(href: "#",
+                class: "pcb__footnote",
+                data_action: "click->chat-messages#showSource:prevent",
+                data_chat_messages_source_title_param: source[:title],
+                data_chat_messages_source_description_param: source[:description],
+                data_chat_messages_source_url_param: source[:url]
+              ) do
+                plain "[#{index}]"
               end
             end
-          end
-
-          message[:sources].each_with_index do |source, index|
-            render SourceModalTemplate.new(
-              source:,
-              index:,
-              message_index: @message_index
-            )
           end
         end
 
