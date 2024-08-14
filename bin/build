@@ -1,24 +1,13 @@
 #!/usr/bin/env bash
-set -euo pipefail
-IFS=$'\n\t'
-set -vx
 
 # Ensure we're in the project root
 cd "$(dirname "$0")/.."
 
-ESBUILD_OPTIONS=(
-  --bundle
-  --outfile=dist/phlex_chatbot.js
-  --loader:.js=jsx
-  --target=es2015
-  --sourcemap
-)
+export ESBUILD_OPTIONS="--bundle --outfile=dist/phlex_chatbot.js --loader:.js=js --target=es2015 --sourcemap"
 
 if [[ "${WATCH:-}" == "1" ]]; then
-  npx postcss src/main.css --verbose -o ./dist/phlex_chatbot.css --watch &
-  npx esbuild src/javascript/index.js "${ESBUILD_OPTIONS[@]}" --watch &
-  wait
+  bundle exec foreman start
 else
   npx postcss src/main.css -o ./dist/phlex_chatbot.css
-  npx esbuild src/javascript/index.js "${ESBUILD_OPTIONS[@]}"
+  npx esbuild src/javascript/index.js "${ESBUILD_OPTIONS}"
 fi

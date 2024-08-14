@@ -82,14 +82,18 @@ button[data-sidebar-target="toggleButton"] {
   @apply bg-white border-b border-gray-200 p-4 flex justify-between items-center;
   @apply dark:bg-gray-900 dark:border-gray-700;
 
-  h1 {
+  > h1 {
     @apply text-xl font-bold;
     @apply dark:text-white;
   }
 
-  button {
-    @apply px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm;
-    @apply dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white;
+  > div {
+    @apply flex space-x-2;
+
+    > button {
+      @apply px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm;
+      @apply dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white;
+    }
   }
 }
 

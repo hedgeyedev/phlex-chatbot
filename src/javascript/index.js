@@ -9,9 +9,9 @@ import SourceModalController from "./controllers/source_modal_controller"
 const application = Application.start()
 
 // Manually register each controller
-application.register("chat-form", ChatFormController)
-application.register("chat-messages", ChatMessagesController)
-application.register("sidebar", SidebarController)
-application.register("source-modal", SourceModalController)
+application.register("pcb-chat-form", ChatFormController)
+application.register("pcb-chat-messages", ChatMessagesController)
+application.register("pcb-sidebar", SidebarController)
+application.register("pcb-source-modal", SourceModalController)
 
 // You can add any other initializations or imports here

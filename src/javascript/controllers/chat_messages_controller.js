@@ -41,8 +41,6 @@ export default class extends Controller {
     this.animateMessage(message)
   }
 
-
-
   showTypingIndicator() {
     this.typingIndicatorTarget.classList.remove('hidden')
   }

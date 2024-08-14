@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "build": "bin/build",
-    "watch": "WATCH=1 bin/build"
+    "watch-all": "WATCH=1 bin/build"
   },
   "dependencies": {
     "@hotwired/stimulus": "^3.0.0"

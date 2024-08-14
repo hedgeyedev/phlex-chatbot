@@ -11,9 +11,13 @@ module Phlex
         end
 
         def view_template
-          div class: "pcb__chat-messages",
-              data_chat_form_target: "messagesContainer",
-              data_controller: "chat-messages" do
+          div(
+            class: "pcb__chat-messages",
+            data: {
+              pcb_chat_form_target: "messagesContainer",
+              pcb_chat_messages_target: "messagesContainer"
+            }
+          ) do
             @messages.each { |message| render Message.new(message:) }
           end
         end

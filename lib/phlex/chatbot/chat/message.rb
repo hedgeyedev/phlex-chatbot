@@ -42,27 +42,24 @@ module Phlex
         def render_sources
           div class: "pcb__message__footnotes" do
             message[:sources].each.with_index(1) do |source, index|
-              a(href: "#",
+              a(
+                href: "#",
                 class: "pcb__footnote",
-                data_action: "click->chat-messages#showSource:prevent",
-                data_chat_messages_source_title_param: source[:title],
-                data_chat_messages_source_description_param: source[:description],
-                data_chat_messages_source_url_param: source[:url]
-              ) do
-                plain "[#{index}]"
-              end
+                data: {
+                  action: "click->pcb-chat-messages#showSource:prevent",
+                  pcb_chat_messages_source_title_param: source[:title],
+                  pcb_chat_messages_source_description_param: source[:description],
+                  pcb_chat_messages_source_url_param: source[:url]
+                }
+              ) { "[#{index}]" }
             end
           end
         end
 
         def render_actions
           div class: "pcb__message__actions" do
-            button data_action: "click->chat-messages#copyMessage" do
-              plain "Copy"
-            end
-            button data_action: "click->chat-messages#regenerateResponse" do
-              plain "Regenerate"
-            end
+            button(data: { action: "click->pcb-chat-messages#copyMessage" }) { "Copy" }
+            button(data: { action: "click->pcb-chat-messages#regenerateResponse" }) { "Regenerate" }
           end
         end
       end

@@ -19,12 +19,12 @@ module Phlex
         end
 
         def view_template
-          div(class: "pcb pcb__chat-container #{" full-page" if @full_page}",
-              data_controller: "chat-form chat-messages messagesContainer") do
-            chat_content!
-          end
+          div(
+            **classes("pcb pcb__chat-container", full_page?: "full_page"),
+            data: { controller: "pcb-chat-form pcb-chat-messages" }
+          ) { chat_content! }
 
-          render_templates
+          templates!
         end
 
         private
@@ -35,7 +35,9 @@ module Phlex
           render Input.new
         end
 
-        def render_templates
+        def full_page? = @full_page
+
+        def templates!
           render Phlex::Chatbot::SourceModal.new
           render Phlex::Chatbot::ChatbotMessageTemplate.new
           render Phlex::Chatbot::ChatbotThinkingTemplate.new

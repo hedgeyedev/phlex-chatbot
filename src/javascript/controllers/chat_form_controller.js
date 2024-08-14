@@ -7,6 +7,7 @@ export default class extends Controller {
   connect() {
     console.log("ChatFormController connected")
     this.resetTextareaHeight()
+    this.scrollToBottom()
   }
 
   submit(event) {
