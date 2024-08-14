@@ -14,7 +14,7 @@ module Phlex
         end
 
         def view_template
-          message_class = message[:from_user] ? "pcb__message__user opacity-0" : "pcb__message__bot"
+          message_class = message[:from_user] ? "pcb__message__user" : "pcb__message__bot"
           user_target_data = message[:from_user] ? "message" : ""
           message_class += " pcb__message__bot-loading" if @with_status_indicator
 

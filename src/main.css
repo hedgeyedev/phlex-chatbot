@@ -35,10 +35,14 @@
 .pcb__chat-messages {
   @apply flex flex-col space-y-4 p-4;
   @apply max-h-[70vh] overflow-y-auto;
+  @apply dark:bg-gray-800;
+  @apply flex-grow overflow-y-auto p-4;
+  @apply dark:bg-gray-800;
 }
 
 .pcb__footnote {
   @apply cursor-pointer text-blue-500 hover:text-blue-700 mr-2;
+  @apply dark:text-blue-400 dark:hover:text-blue-300;
 }
 
 .pcb__header {
@@ -47,19 +51,19 @@
 
   h1 {
     @apply text-xl font-bold;
+    @apply dark:text-white;
   }
 
   button {
     @apply px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm;
-    @apply dark:bg-gray-800 dark:hover:bg-gray-700;
+    @apply dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white;
   }
 }
 
 .pcb__loading-line {
-  @apply mb-2 h-3 bg-gray-200 rounded;
-  @apply dark:bg-gray-400;
+  @apply mb-2 h-3 bg-gray-400 rounded;
+  @apply dark:bg-gray-600;
   animation: pulse 1.5s infinite;
-  /*animation: loadingPulse 1.5s infinite;*/
 
   &:nth-child(2) {
     @apply w-4/5;
@@ -76,7 +80,7 @@
 
 .pcb__message {
   @apply mb-4 p-3 rounded-lg inline-block min-w-[200px] max-w-[70%] transition-opacity duration-500 ease-in-out;
-  @apply dark:text-gray-800;
+  @apply dark:text-white;
 }
 
 .pcb__message__actions {
@@ -84,16 +88,18 @@
 
   button {
     @apply text-xs text-gray-500 hover:text-gray-700;
+    @apply dark:text-gray-400 dark:hover:text-gray-200;
   }
 }
 
 .pcb__message__bot {
   @apply bg-gray-100 self-start;
+  @apply dark:bg-gray-700;
 }
 
 .pcb__message__bot-loading {
   @apply bg-gray-100;
-  @apply dark:bg-gray-200;
+  @apply dark:bg-gray-700;
 }
 
 .pcb__message__bot-appear {
@@ -102,31 +108,64 @@
 
 .pcb__message__content {
   @apply text-sm;
+  @apply dark:text-white;
 }
 
 .pcb__message__footnotes {
   @apply mt-2 text-sm text-gray-500;
+  @apply dark:text-gray-400;
 }
 
 .pcb__message__user {
   @apply bg-green-100 self-end;
+  @apply dark:bg-green-800;
 }
 
 .pcb__messages {
   @apply flex-grow overflow-y-auto p-4;
+  @apply dark:bg-gray-800;
 }
 
 .pcb__source-modal {
-  @apply fixed !m-0 inset-0 bg-black bg-opacity-50 flex items-center justify-center;
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4;
 }
 
 .pcb__source-modal-content {
-  @apply bg-white text-gray-800 p-6 rounded-lg max-w-lg w-full;
+  @apply bg-white dark:bg-gray-800 text-gray-800 dark:text-white p-6 rounded-lg max-w-2xl w-full;
+  @apply shadow-xl;
+}
+
+.pcb__source-modal-title {
+  @apply text-2xl font-bold mb-4 text-center;
+}
+
+.pcb__source-modal-description {
+  @apply mb-6;
+}
+
+.pcb__source-modal-quote {
+  @apply border-l-4 border-blue-500 dark:border-blue-400 pl-4 py-2 mb-6;
+  @apply bg-gray-100 dark:bg-gray-700 rounded;
+  @apply font-serif text-lg leading-relaxed; /* Updated: serif font and larger text */
+}
+
+.pcb__source-modal-actions {
+  @apply flex justify-between items-center;
+}
+
+.pcb__source-modal-link {
+  @apply px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors;
+  @apply dark:bg-blue-600 dark:hover:bg-blue-700;
+}
+
+.pcb__source-modal-close {
+  @apply px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors;
+  @apply dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600;
 }
 
 .pcb__status-indicator {
   @apply text-xs text-gray-500 mb-1;
-  @apply dark:text-gray-800;
+  @apply dark:text-gray-400;
   transition: opacity 0.3s ease-in-out;
 }
 
@@ -140,14 +179,17 @@
 
 .pcb__user-identifier-avatar__bot {
   @apply bg-blue-500;
+  @apply dark:bg-blue-600;
 }
 
 .pcb__user-identifier-avatar__user {
   @apply bg-green-500;
+  @apply dark:bg-green-600;
 }
 
 .pcb__user-identifier-name {
-  @apply font-semibold dark:text-gray-800;
+  @apply font-semibold;
+  @apply dark:text-white;
 }
 
 @keyframes fadeIn {
@@ -177,6 +219,82 @@
   }
 }
 
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in {
+  animation: slideInFromRight 0.1s ease-out forwards;
+}
+
 .hide-modal{
   display: none !important;
+}
+
+/* Full page style messing around */
+
+.pcb__chat-container.full-page {
+  @apply flex flex-col;
+  @apply bg-gray-100 dark:bg-gray-900 text-black dark:text-white;
+  @apply rounded-lg shadow-xl;
+  @apply my-8 mx-auto;
+  max-width: 900px;  
+  height: 85vh;  
+}
+
+.pcb__chat-container.full-page .pcb__messages {
+  @apply flex-grow overflow-y-auto p-6;
+  @apply space-y-4;
+}
+
+.pcb__chat-container.full-page .pcb__header {
+  @apply bg-white dark:bg-gray-800 text-black dark:text-white p-4 rounded-t-lg;
+  @apply flex justify-between items-center;
+}
+
+.pcb__chat-container.full-page .pcb__chat-input {
+  @apply p-4 bg-white dark:bg-gray-800 rounded-b-lg;
+  @apply border-t border-gray-200 dark:border-gray-700;
+}
+
+.pcb__chat-container.full-page .pcb__chat-input textarea {
+  @apply w-full p-2 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.pcb__chat-container.full-page .pcb__chat-input button {
+  @apply mt-2 px-4 py-2 bg-blue-500 text-white rounded;
+  @apply hover:bg-blue-600 transition-colors;
+}
+
+.pcb__chat-container.full-page .pcb__message {
+  @apply p-3 rounded-lg max-w-[70%];
+  @apply transition-opacity duration-500 ease-in-out;
+}
+
+.pcb__chat-container.full-page .pcb__message__bot {
+  @apply bg-gray-200 dark:bg-gray-700 self-start;
+}
+
+.pcb__chat-container.full-page .pcb__message__user {
+  @apply bg-blue-100 dark:bg-blue-600 self-end;
+}
+
+.pcb__chat-container.full-page .pcb__message__content {
+  @apply text-sm text-black dark:text-white;
+}
+
+.pcb__chat-container.full-page .pcb__message__actions {
+  @apply mt-2 flex space-x-2;
+}
+
+.pcb__chat-container.full-page .pcb__message__actions button {
+  @apply text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200;
 }

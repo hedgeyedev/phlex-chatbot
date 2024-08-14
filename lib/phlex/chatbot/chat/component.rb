@@ -19,7 +19,8 @@ module Phlex
         end
 
         def view_template
-          div(class: "pcb pcb__chat-container", data_controller: "chat-form chat-messages messagesContainer") do
+          div(class: "pcb pcb__chat-container #{" full-page" if @full_page}",
+              data_controller: "chat-form chat-messages messagesContainer") do
             chat_content!
           end
 
