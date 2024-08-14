@@ -270,7 +270,7 @@
 }
 
 .pcb__chat-container.full-page .pcb__chat-input button {
-  @apply mt-2 px-4 py-2 bg-blue-500 text-white rounded;
+  @apply mt-0 px-4 py-2 bg-blue-500 text-white rounded;
   @apply hover:bg-blue-600 transition-colors;
 }
 
