@@ -19,11 +19,12 @@ module Phlex
         end
 
         def view_template
-          div(class: "pcb__sidebar", data_sidebar_target: "sidebar") { render Component.new(messages: @messages) }
-          button class: "pcb__sidebar-activator",
-                 data_action: "click->sidebar#toggle",
-                 data_sidebar_target: "toggleButton" do
-            render ActivatorButton.new
+          span(data: { controller: "sidebar", sidebar_active_class: "pcb__sidebar-activator__deactivate" }) do
+            div(class: "pcb__sidebar", data_sidebar_target: "sidebar") { render Component.new(messages: @messages) }
+            button class: "pcb__sidebar-activator",
+                   data: { action: "click->sidebar#toggle", sidebar_target: "toggleButton" } do
+              render ActivatorButton.new
+            end
           end
         end
       end
