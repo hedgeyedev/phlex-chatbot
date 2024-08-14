@@ -32,9 +32,42 @@
   }
 }
 
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+.transform.translate-x-full {
+  transform: translateX(100%);
+}
+
+button[data-sidebar-target="toggleButton"] {
+  transition: all 0.3s ease-in-out;
+}
+
+@media (min-width: 768px) {
+  main[data-sidebar-target="main"] {
+    margin-right: 40%;
+  }
+}
+
+@media (min-width: 1024px) {
+  main[data-sidebar-target="main"] {
+    margin-right: 33.333333%;
+  }
+}
+
+@media (max-width: 767px) {
+  [data-sidebar-target="sidebar"].w-full {
+    width: 100% !important;
+  }
+}
+
+
 .pcb__chat-messages {
   @apply flex flex-col space-y-4 p-4;
-  @apply max-h-[70vh] overflow-y-auto;
+  @apply max-h-[100vh] overflow-y-auto;
   @apply dark:bg-gray-800;
   @apply flex-grow overflow-y-auto p-4;
   @apply dark:bg-gray-800;
