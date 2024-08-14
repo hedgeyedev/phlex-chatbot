@@ -3,8 +3,22 @@ set -euo pipefail
 IFS=$'\n\t'
 set -vx
 
-if [[ "$WATCH" == "" ]]; then
-  npx postcss src/main.css -o ./dist/phlex_chatbot.css
+# Ensure we're in the project root
+cd "$(dirname "$0")/.."
+
+ESBUILD_OPTIONS=(
+  --bundle
+  --outfile=dist/phlex_chatbot.js
+  --loader:.js=jsx
+  --target=es2015
+  --sourcemap
+)
+
+if [[ "${WATCH:-}" == "1" ]]; then
+  npx postcss src/main.css --verbose -o ./dist/phlex_chatbot.css --watch &
+  npx esbuild src/javascript/index.js "${ESBUILD_OPTIONS[@]}" --watch &
+  wait
 else
-  npx postcss src/main.css --verbose -o ./dist/phlex_chatbot.css --watch
+  npx postcss src/main.css -o ./dist/phlex_chatbot.css
+  npx esbuild src/javascript/index.js "${ESBUILD_OPTIONS[@]}"
 fi
