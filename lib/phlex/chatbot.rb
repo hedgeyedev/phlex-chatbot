@@ -10,6 +10,57 @@ module Phlex
     autoload :Chat, "phlex/chatbot/chat"
     autoload :StatusComponent, "phlex/chatbot/status_component"
 
+    class Bot
+      attr_reader :id, :subscribers
+
+      def self.bots
+        @bots ||= {}
+      end
+
+      def self.create(id)
+        bots[id] ||= new(id)
+      end
+
+      def self.destroy(id)
+        bots.delete(id)
+      end
+
+      def self.send_event(id, event, data:)
+        bot = bots[id]
+        bot&.send_event(event, data: data)
+        !bot.nil?
+      end
+
+      def initialize(id)
+        @id = id
+        @subscribers = Set.new
+      end
+
+      def call(io)
+        @subscribers << io
+        send_event(:joined, data: { id: @id, subscribers: @subscribers.size })
+      end
+
+      def send_event(event, data:)
+        removals = Set.new
+        @subscribers.each do |io|
+          begin
+            io.write("event: #{event}\n")
+            io.write(message(JSON.pretty_generate(data.merge(subscribers: @subscribers.size))))
+            io.write("\n\n")
+          end
+        rescue Errno::EPIPE => e
+          removals << io
+        end
+        @subscribers -= removals
+        Bot.destroy(@id) if @subscribers.empty?
+      end
+
+      def message(data)
+        data.split("\n").map { |line| "data: #{line}" }.join("\n")
+      end
+    end
+
     # Rack app to serve the chatbot assets
     class Web
       def self.call(env)
@@ -21,33 +72,58 @@ module Phlex
       end
 
       def call
-        content_type, content = determine_content
-        if content_type
-          [200, { "Content-Type" => content_type }, [content]]
-        else
-          [404, { "Content-Type" => "text/plain" }, "not found"]
+        case request_method
+        when "GET" then get
+        when "POST" then post
+        else raise "Unsupported request method: #{request_method}"
         end
       end
 
       private
 
-      def chat_css
-        File.read(File.expand_path("../../dist/phlex_chatbot.css", __dir__))
-      end
-
-      def chat_js
-        File.read(File.expand_path("../../dist/phlex_chatbot.js", __dir__))
-      end
-
-      def determine_content
-        case @env["PATH_INFO"]
-        when "/js"
-          ["application/javascript", chat_js]
-        when "/css"
-          ["text/css", chat_css]
+      def get
+        case path
+        when "/bot.css"
+          [200, { "content-type" => "text/css" }, [css]]
+        when "/bot.js"
+          [200, { "content-type" => "application/javascript" }, [js]]
+        when "/bot.js.map"
+          [200, { "content-type" => "application/javascript" }, [js_map]]
+        when %r{/bot/([a-fA-F0-9]+$)}
+          [200, { "content-type" => "text/event-stream" }, Bot.create(Regexp.last_match(1))]
         else
-          [nil]
+          [404, { "content-type" => "text/plain" }, ["not found"]]
         end
+      end
+
+      def post
+        case path
+        when %r{/bot/([a-fA-F0-9]+$)}
+          ok = Bot.send_event(Regexp.last_match(1), :message, data: { message: @env["rack.input"].read })
+          if ok
+            [200, { "content-type" => "text/plain" }, ["ok"]]
+          else
+            [404, { "content-type" => "text/plain" }, ["not found"]]
+          end
+        else
+          [404, { "content-type" => "text/plain" }, ["not found"]]
+        end
+      end
+
+      def request_method = @env["REQUEST_METHOD"].upcase
+
+      def path = @env["PATH_INFO"]
+
+      def css
+        File.read(File.expand_path("../../dist/bot.css", __dir__))
+      end
+
+      def js
+        File.read(File.expand_path("../../dist/bot.js", __dir__))
+      end
+
+      def js_map
+        File.read(File.expand_path("../../dist/bot.js.map", __dir__))
       end
     end
   end
