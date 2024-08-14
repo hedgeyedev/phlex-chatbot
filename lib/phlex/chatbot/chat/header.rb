@@ -14,8 +14,6 @@ module Phlex
             div class: "flex space-x-2" do
               button data_action: "click->chat-messages#clearChat" do
                 plain "Clear chat"
-              end
-              if @full_page
                 button data_action: "click->chat-messages#toggleDarkMode" do
                   plain "Toggle dark mode"
                 end

@@ -4,4 +4,5 @@ module.exports = {
     './lib/**/*.rb',
   ],
   plugins: [],
+  darkMode: 'class',
 }
