@@ -2,6 +2,8 @@
 
 source "https://rubygems.org"
 
+ruby file: '.ruby-version'
+
 gem "phlex", "~> 1.11"
 gem "rack", "~> 3.1"
 gem "rake", "~> 13.0"
