@@ -14,14 +14,15 @@ module Phlex
           end
         end
 
-        def initialize(messages:)
+        def initialize(messages:, endpoint:)
           @messages = messages
+          @endpoint = endpoint
         end
 
         def view_template
           span(data: { controller: "pcb-sidebar", pcb_sidebar_active_class: "pcb__sidebar-activator__deactivate" }) do
             div(class: "pcb__sidebar", data: { pcb_sidebar_target: "sidebar" }) do
-              render Component.new(messages: @messages)
+              render Component.new(messages: @messages, endpoint: @endpoint)
             end
             button class: "pcb__sidebar-activator",
                    data: { action: "click->pcb-sidebar#toggle", pcb_sidebar_target: "toggleButton" } do
