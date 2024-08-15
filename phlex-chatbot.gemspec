@@ -32,6 +32,11 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "concurrent-ruby", "~> 1.3"
+  spec.add_dependency "phlex", "~> 1.10"
+  spec.add_dependency "rack", "~> 3.1"
+
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
+  spec.metadata["rubygems_mfa_required"] = "true"
 end
