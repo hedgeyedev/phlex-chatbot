@@ -4,8 +4,7 @@ source "https://rubygems.org"
 
 ruby file: ".ruby-version"
 
-gem "phlex", "~> 1.11"
-gem "rack", "~> 3.1"
+gemspec
 
 group :development, :test do
   gem "foreman", "~> 0.88.1"
