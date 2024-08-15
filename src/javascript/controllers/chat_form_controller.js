@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [ "input", "messagesContainer", "statusIndicator" ]
-  static values = { endpoint: String }
+  static values = { conversationToken: String, endpoint: String }
 
   connect() {
     console.log("ChatFormController connected")
@@ -13,7 +13,7 @@ export default class extends Controller {
   }
 
   setupBotConversation() {
-    this.conversation = new EventSource(this.endpointValue + "/bot/abc");
+    this.conversation = new EventSource(this.url("join"));
     this.conversation.onerror = event => {
       console.log(`error: ${this.conversation.readyState}`);
       this.messagesContainerTarget.classList.add('pcb__connection-error');
@@ -22,7 +22,6 @@ export default class extends Controller {
       console.log(`opened: ${this.conversation.readyState}`);
       this.messagesContainerTarget.classList.remove('pcb__connection-error');
     }
-
 
     this.conversation.addEventListener("status", event => {
       const parsed = JSON.parse(event.data);
@@ -34,12 +33,16 @@ export default class extends Controller {
       console.log("Received response:", parsed.message);
       this.showBotResponse(this.messagesContainerTarget.lastElementChild, parsed.message);
     });
+    this.conversation.addEventListener("failure", event => {
+      const parsed = JSON.parse(event.data);
+      console.log("Received failure:", parsed.message);
+      this.showBotResponse(this.messagesContainerTarget.lastElementChild, `ERR: ${parsed.message}`);
+    });
   }
 
   submit(event) {
     event.preventDefault()
     const message = this.inputTarget.value.trim()
-    const botResponse = this.showBotResponse.bind(this)
 
     if (message) {
       console.log("Sending message:", message)
@@ -50,7 +53,7 @@ export default class extends Controller {
       const data = { message }
       const element = this.prepareForResponse();
 
-      fetch(this.endpointValue + "/bot/abc", {
+      fetch(this.url("ask"), {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -59,13 +62,10 @@ export default class extends Controller {
         }
       }).then(response => {
         if (response.ok) {
-          return response.text();
+          return null;
         } else {
           throw new Error('Failed to send message')
         }
-      }).then(data => {
-        console.log(data);
-        //setTimeout(() => { botResponse(element, data.message) }, 5000);
       });
     }
   }
@@ -130,5 +130,9 @@ export default class extends Controller {
     if (this.hasMessagesContainerTarget) {
       this.messagesContainerTarget.scrollTop = this.messagesContainerTarget.scrollHeight
     }
+  }
+
+  url(action) {
+    return `${this.endpointValue}/${action}/${this.conversationTokenValue}`
   }
 }
