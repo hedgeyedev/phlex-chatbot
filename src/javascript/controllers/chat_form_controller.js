@@ -7,21 +7,31 @@ export default class extends Controller {
 
   connect() {
     console.log("ChatFormController connected")
-    this.setupBotSession();
+    this.setupBotConversation();
     this.resetTextarea()
     this.scrollToBottom()
   }
 
-  setupBotSession() {
-    this.session = new EventSource(this.endpointValue + "/bot/abc");
-    this.session.addEventListener("status", event => {
+  setupBotConversation() {
+    this.conversation = new EventSource(this.endpointValue + "/bot/abc");
+    this.conversation.onerror = event => {
+      console.log(`error: ${this.conversation.readyState}`);
+      this.messagesContainerTarget.classList.add('pcb__connection-error');
+    }
+    this.conversation.onopen = event => {
+      console.log(`opened: ${this.conversation.readyState}`);
+      this.messagesContainerTarget.classList.remove('pcb__connection-error');
+    }
+
+
+    this.conversation.addEventListener("status", event => {
       const parsed = JSON.parse(event.data);
       console.log("Received status:", parsed.message);
       this.statusIndicator.textContent = parsed.message;
     })
-    this.session.addEventListener("message", event => {
+    this.conversation.addEventListener("response", event => {
       const parsed = JSON.parse(event.data);
-      console.log("Received message:", parsed.message);
+      console.log("Received response:", parsed.message);
       this.showBotResponse(this.messagesContainerTarget.lastElementChild, parsed.message);
     });
   }
@@ -113,7 +123,7 @@ export default class extends Controller {
 
   showBotResponse(botMessageElement, userMessage) {
     botMessageElement.remove();
-    this.addMessageToUI(`I received your message: "${userMessage}"`, false);
+    this.addMessageToUI(userMessage, false);
   }
 
   scrollToBottom() {

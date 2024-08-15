@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "langchain"
+require "openai"
+
 require_relative "chatbot/version"
 
 module Phlex
@@ -105,12 +108,16 @@ module Phlex
 
           Thread.start do
             Bot.send_event(id, :status, data: { message: "Retrieving relevant documents" })
+            openai_api_key = ENV.fetch("OPENAI_API_KEY", "fakeopenaiapikey")
+            llm = Langchain::LLM::OpenAI.new(api_key: openai_api_key)
             sleep(1)
-            Bot.send_event(id, :status, data: { message: "Reranking results" })
-            sleep(1)
-            Bot.send_event(id, :status, data: { message: "Thinking" })
-            sleep(1)
-            Bot.send_event(id, :message, data: JSON(data))
+            Bot.send_event(id, :status, data: { message: "Asking the oracle" })
+            begin
+              chat = llm.chat(messages: [{role: "user", content: data}])
+              Bot.send_event(id, :response, data: { message: chat.chat_completion })
+            rescue StandardError => e
+              Bot.send_event(id, :response, data: { message: "Error: #{e.message}" })
+            end
           end
 
           if ok
