@@ -9,5 +9,5 @@ if [[ "${WATCH:-}" == "1" ]]; then
   bundle exec foreman start
 else
   npx postcss src/main.css -o ./dist/bot.css
-  npx esbuild src/javascript/index.js "${ESBUILD_OPTIONS}"
+  npx esbuild src/javascript/index.js ${ESBUILD_OPTIONS}
 fi

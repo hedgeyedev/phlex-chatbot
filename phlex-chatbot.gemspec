@@ -14,22 +14,17 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2"
 
-  spec.metadata["allowed_push_host"] = "gems.hedgeye.cloud"
+  spec.metadata["allowed_push_host"] = "https://gems.hedgeye.cloud/private"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = "#{spec.homepage}/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
-  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  spec.files = Dir.chdir(__dir__) do
-    `git ls-files -z`.split("\x0").reject do |f|
-      (File.expand_path(f) == __FILE__) ||
-        f.start_with?(*%w[bin/ dist/ test/ spec/ features/ .git .circleci appveyor Gemfile])
-    end
+  spec.files = Dir.chdir(File.expand_path(__dir__)) do
+    `bin/build`
+    Dir["{dist,lib}/**/*", "CHANGELOG.md", "LICENSE.txt", "README.md"]
   end
-  spec.bindir = "exe"
-  spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
   spec.add_dependency "concurrent-ruby", "~> 1.3"
