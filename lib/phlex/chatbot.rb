@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require "langchain"
-require "openai"
+require "concurrent"
+require "phlex"
+require "rack"
 
 require_relative "chatbot/version"
 require_relative "chatbot/bot_conversation"
