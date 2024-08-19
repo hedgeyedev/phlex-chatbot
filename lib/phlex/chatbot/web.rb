@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
+require_relative "client/web_socket"
+
 module Phlex
   module Chatbot
     # Rack app to serve the chatbot assets
+
     class Web
+      class HijackMissing < ::Phlex::Chatbot::Error; end
+
       def self.call(env)
         new(env).call
       end
@@ -14,15 +19,15 @@ module Phlex
 
       def call
         case request_method
-        when "GET" then get
-        when "POST" then post
+        when "GET" then on_get
+        when "POST" then on_post
         else raise "Unsupported request method: #{request_method}"
         end
       end
 
       private
 
-      def get
+      def on_get
         case path
         when "/bot.css"
           [200, { "content-type" => "text/css" }, [css]]
@@ -31,19 +36,25 @@ module Phlex
         when "/bot.js.map"
           [200, { "content-type" => "application/javascript" }, [js_map]]
         when %r{/join/([a-fA-F0-9]+$)}
-          # this id comes from the host app, ostensibly after it has called our API to create a conversation
           bot = BotConversation.find(Regexp.last_match(1))
-          if bot
-            [200, { "content-type" => "text/event-stream" }, bot]
+          return respond_not_found! unless bot
+
+          if @env["HTTP_UPGRADE"]&.starts_with?("websocket")
+            # WebSocket
+            bot.subscribe(Client::WebSocket.new(@env, bot.token))
+            [ -1, {}, [] ]
           else
-            respond_not_found!
+            # SSE
+            # Note: we don't really understand why we have to return bot as part of the response but that is how the
+            # client gets subscribed to the channel.
+            [200, sse_headers, bot]
           end
         else
           respond_not_found!
         end
       end
 
-      def post
+      def on_post
         case path
         when %r{/ask/([a-fA-F0-9]+$)}
           ok = true
@@ -78,6 +89,14 @@ module Phlex
 
       def js_map
         File.read(File.join(ROOT_DIR, "dist", "bot.js.map"))
+      end
+
+      def sse_headers
+        {
+          "content-type" => "text/event-stream",
+          "x-accel-buffering" => "no",
+          "last-modified" => Time.now.httpdate
+        }
       end
     end
   end

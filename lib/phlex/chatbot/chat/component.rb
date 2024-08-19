@@ -13,8 +13,9 @@ module Phlex
   module Chatbot
     module Chat
       class Component < Phlex::HTML
-        def initialize(conversation_token:, endpoint:, messages:, full_page: false)
+        def initialize(conversation_token:, driver:, endpoint:, messages:, full_page: false)
           @conversation_token = conversation_token
+          @driver             = driver
           @endpoint           = endpoint
           @full_page          = full_page
           @messages           = messages
@@ -26,6 +27,7 @@ module Phlex
             data: {
               controller: "pcb-chat-form pcb-chat-messages",
               pcb_chat_form_conversation_token_value: @conversation_token,
+              pcb_chat_form_driver_value: @driver,
               pcb_chat_form_endpoint_value: @endpoint,
             },
           ) { chat_content! }

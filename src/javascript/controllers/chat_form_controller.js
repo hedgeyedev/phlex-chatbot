@@ -3,16 +3,27 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [ "input", "messagesContainer", "statusIndicator" ]
-  static values = { conversationToken: String, endpoint: String }
+  static values = {
+    conversationToken: String,
+    driver: { type: String, default: "websocket" },
+    endpoint: String,
+  }
 
   connect() {
     console.log("ChatFormController connected")
-    this.setupBotConversation();
+    if (this.driverValue === "sse") {
+      this.setup = this.setupSseConversation;
+      this.submit = this.submitSse;
+    } else if (this.driverValue === "websocket") {
+      this.setup = this.setupWebSocketConversation;
+      this.submit = this.submitWebSocket;
+    }
+    this.setup();
     this.resetTextarea()
     this.scrollToBottom()
   }
 
-  setupBotConversation() {
+  setupSseConversation() {
     this.conversation = new EventSource(this.url("join"));
     this.conversation.onerror = event => {
       console.log(`error: ${this.conversation.readyState}`);
@@ -40,7 +51,44 @@ export default class extends Controller {
     });
   }
 
-  submit(event) {
+  setupWebSocketConversation() {
+    this.conversation = new WebSocket(this.url("join"));
+
+    this.conversation.onerror = event => {
+      console.log(`error: ${this.conversation.readyState}`);
+      this.messagesContainerTarget.classList.add('pcb__connection-error');
+    }
+    this.conversation.onopen = event => {
+      console.log(`opened: ${this.conversation.readyState}`);
+      this.messagesContainerTarget.classList.remove('pcb__connection-error');
+    }
+    this.conversation.onmessage = event => {
+      const parsed = JSON.parse(event.data);
+      console.log("Received message:", parsed.data);
+      if (parsed.event === "status") {
+        this.statusIndicator.textContent = parsed.data.message;
+      } else if (parsed.event === "response") {
+        this.showBotResponse(this.messagesContainerTarget.lastElementChild, parsed.data.message);
+      } else if (parsed.event === "failure") {
+        this.showBotResponse(this.messagesContainerTarget.lastElementChild, `ERR: ${parsed.data.message}`);
+      }
+    }
+  }
+
+  submitWebSocket(event) {
+    event.preventDefault();
+    const message = this.inputTarget.value.trim();
+
+    if (message) {
+      console.log("Sending message:", message);
+      this.addMessageToUI(message, true);
+      this.resetTextarea();
+
+      this.conversation.send(message);
+    }
+  }
+
+  submitSse(event) {
     event.preventDefault()
     const message = this.inputTarget.value.trim()
 
