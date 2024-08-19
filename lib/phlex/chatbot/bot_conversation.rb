@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require_relative "client/server_sent_events"
+require_relative "client/web_socket"
+
 module Phlex
   module Chatbot
     class BotConversation
@@ -53,19 +56,23 @@ module Phlex
         @subscribers = Concurrent::Set.new
       end
 
-      # This is public for the sake of Rack's hijack API. It should not be used directly.
-      def call(event_stream)
-        @subscribers << event_stream
-        send_event(:joined, data: { subscribers: @subscribers.size })
+      def subscribe_with_sse_io(io)
+        client = Client::ServerSentEvents.new(io)
+        @subscribers << client
+        send_event(:joined, data: {})
       end
 
+      # Note: We don't really understand why we have to do it this way for SSE
+      alias call subscribe_with_sse_io
+
+      # This is public for the sake of Rack's hijack API. It should not be used directly.
       def send_failure!(error)
         send_event(:failure, data: { message: error.message })
         puts error.backtrace
       end
 
-      def send_response!(message:)
-        send_event(:response, data: { message: message })
+      def send_response!(message:, sources: nil)
+        send_event(:response, data: { message: message, sources: sources })
       end
 
       def send_status!(message:)
@@ -78,25 +85,25 @@ module Phlex
         send_failure!(e)
       end
 
+      def subscribe(client)
+        @subscribers << client
+        send_event(:joined, data: {})
+      end
+
       private
 
       def send_event(event, data:)
         removals = Set.new
-        subscribers.each do |io|
-          begin
-            io.write("event: #{event}\n")
-            io.write(prefix_data(JSON.pretty_generate(data.merge(subscribers: subscribers.size))))
-            io.write("\n\n") # required by the SSE protocol
-          end
+        subscribers.each do |sub|
+          sub.send_event(event, data.merge(subscribers: subscribers.size))
         rescue Errno::EPIPE => _e
-          removals << io
+          removals << sub
         end
-        removals.each { |e| subscribers.delete(e) }
+        removals.each do |e|
+          e.close rescue nil # rubocop:disable Style/RescueModifier
+          subscribers.delete(e)
+        end
         self.class.destroy(token) if subscribers.empty?
-      end
-
-      def prefix_data(data)
-        data.split("\n").map { |line| "data: #{line}" }.join("\n")
       end
     end
   end

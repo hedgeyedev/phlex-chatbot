@@ -14,8 +14,9 @@ module Phlex
           end
         end
 
-        def initialize(conversation_token:, endpoint:, messages:)
+        def initialize(conversation_token:, endpoint:, messages:, driver: :websocket)
           @conversation_token = conversation_token
+          @driver             = driver
           @endpoint           = endpoint
           @messages           = messages
         end
@@ -23,7 +24,12 @@ module Phlex
         def view_template
           span(data: { controller: "pcb-sidebar", pcb_sidebar_active_class: "pcb__sidebar-activator__deactivate" }) do
             div(class: "pcb__sidebar", data: { pcb_sidebar_target: "sidebar" }) do
-              render Component.new(conversation_token: @conversation_token, endpoint: @endpoint, messages: @messages)
+              render Component.new(
+                conversation_token: @conversation_token,
+                driver: @driver,
+                endpoint: @endpoint,
+                messages: @messages,
+              )
             end
             button class: "pcb__sidebar-activator",
                    data: { action: "click->pcb-sidebar#toggle", pcb_sidebar_target: "toggleButton" } do
