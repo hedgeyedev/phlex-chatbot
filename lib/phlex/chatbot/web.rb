@@ -42,7 +42,7 @@ module Phlex
           if @env["HTTP_UPGRADE"]&.starts_with?("websocket")
             # WebSocket
             bot.subscribe(Client::WebSocket.new(@env, bot.token))
-            [ -1, {}, [] ]
+            [-1, {}, []]
           else
             # SSE
             # Note: we don't really understand why we have to return bot as part of the response but that is how the
@@ -59,7 +59,7 @@ module Phlex
         when %r{/ask/([a-fA-F0-9]+$)}
           ok = true
 
-          BotConversation.converse(Regexp.last_match(1), @env["rack.input"].read)
+          BotConversation.converse(Regexp.last_match(1), JSON.parse(@env["rack.input"].read)["message"])
 
           if ok
             [200, { "content-type" => "text/plain" }, ["ok"]]
@@ -93,9 +93,9 @@ module Phlex
 
       def sse_headers
         {
-          "content-type" => "text/event-stream",
+          "content-type"      => "text/event-stream",
           "x-accel-buffering" => "no",
-          "last-modified" => Time.now.httpdate
+          "last-modified"     => Time.now.httpdate,
         }
       end
     end
