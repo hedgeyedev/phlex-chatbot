@@ -16,6 +16,7 @@ module Phlex
         the_bot = bots[token]
         return false unless the_bot
 
+        the_bot.send_ack!(message: message)
         the_bot.send_status!(message: "Asking the oracle")
 
         future = Concurrent::Promises.future_on(:io, the_bot, message) do |bot, data|
@@ -66,6 +67,10 @@ module Phlex
       alias call subscribe_with_sse_io
 
       # This is public for the sake of Rack's hijack API. It should not be used directly.
+      def send_ack!(message:)
+        send_event(:ack, data: { message: message })
+      end
+
       def send_failure!(error)
         send_event(:failure, data: { message: error.message })
         puts error.backtrace
