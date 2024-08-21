@@ -28,21 +28,6 @@ export default class extends Controller {
     this.scrollToBottom()
   }
 
-  reconnect() {
-    if (this.reconnecting) {
-      return;
-    }
-
-    this.reconnecting = true;
-    this.reconnectAttempts += 1;
-    const timeout = Math.min(5, ((this.reconnectAttempts - 1) ** 1.3));
-    console.debug(`Reconnecting in ${timeout}s (attempt ${this.reconnectAttempts})`);
-    setTimeout(() => {
-      this.setup();
-      this.reconnecting = false;
-    }, timeout * 1000);
-  }
-
   alterUI(commands) {
     if (!this.hasMessagesContainerTarget) {
       console.error("Messages container not found");
@@ -53,12 +38,17 @@ export default class extends Controller {
       const { cmd, element, selector } = obj;
       if (cmd === "append") {
         this.messagesContainerTarget.insertAdjacentHTML("beforeEnd", element);
+        this.scrollToBottom();
       } else if (cmd === "delete") {
         this.messagesContainerTarget.querySelector(selector)?.remove();
+        this.scrollToBottom();
       }
     });
+  }
 
-    this.scrollToBottom()
+  disableInput() {
+    this.disabled = true;
+    this.inputTarget.parentElement.querySelector('button').disabled = true;
   }
 
   dispatchClose(message, event) {
@@ -98,6 +88,32 @@ export default class extends Controller {
     );
   }
 
+  enableInput() {
+    this.disabled = false;
+    this.inputTarget.parentElement.querySelector('button').disabled = false;
+  }
+
+  handleKeyboardSubmit(event) {
+    if (!this.disabled) {
+      this.submit(event);
+    }
+  }
+
+  reconnect() {
+    if (this.reconnecting) {
+      return;
+    }
+
+    this.reconnecting = true;
+    this.reconnectAttempts += 1;
+    const timeout = Math.min(5, ((this.reconnectAttempts - 1) ** 1.3));
+    console.debug(`Reconnecting in ${timeout}s (attempt ${this.reconnectAttempts})`);
+    setTimeout(() => {
+      this.setup();
+      this.reconnecting = false;
+    }, timeout * 1000);
+  }
+
   registerEventListeners() {
 
     const disconnectCallback = (e) => {
@@ -125,6 +141,22 @@ export default class extends Controller {
       console.debug("Received resp:", event.detail);
       this.alterUI(event.detail.commands);
     });
+  }
+
+  resetTextarea() {
+    this.inputTarget.value = ""
+    this.resetTextareaHeight();
+  }
+
+  resetTextareaHeight() {
+    this.inputTarget.style.height = 'auto'
+    this.inputTarget.style.height = this.inputTarget.scrollHeight + 'px'
+  }
+
+  scrollToBottom() {
+    if (this.hasMessagesContainerTarget) {
+      this.messagesContainerTarget.scrollTop = this.messagesContainerTarget.scrollHeight
+    }
   }
 
   setupSseConversation() {
@@ -196,38 +228,6 @@ export default class extends Controller {
           throw new Error('Failed to send message')
         }
       });
-    }
-  }
-
-  disableInput() {
-    this.disabled = true;
-    this.inputTarget.parentElement.querySelector('button').disabled = true;
-  }
-
-  enableInput() {
-    this.disabled = false;
-    this.inputTarget.parentElement.querySelector('button').disabled = false;
-  }
-
-  handleKeyboardSubmit(event) {
-    if (!this.disabled) {
-      this.submit(event);
-    }
-  }
-
-  resetTextarea() {
-    this.inputTarget.value = ""
-    this.resetTextareaHeight();
-  }
-
-  resetTextareaHeight() {
-    this.inputTarget.style.height = 'auto'
-    this.inputTarget.style.height = this.inputTarget.scrollHeight + 'px'
-  }
-
-  scrollToBottom() {
-    if (this.hasMessagesContainerTarget) {
-      this.messagesContainerTarget.scrollTop = this.messagesContainerTarget.scrollHeight
     }
   }
 

@@ -7,8 +7,6 @@ module Phlex
     # Rack app to serve the chatbot assets
 
     class Web
-      class HijackMissing < ::Phlex::Chatbot::Error; end
-
       def self.call(env)
         new(env).call
       end
