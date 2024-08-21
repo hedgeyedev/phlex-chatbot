@@ -1,0 +1,26 @@
+#/usr/bin/env bash
+
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 <version>"
+  exit 1
+fi
+
+git diff-files --quiet
+if [ $? -ne 0 ]; then
+  echo "There are uncommitted changes in the working directory."
+  echo "Please commit or stash them before updating the version."
+  exit 1
+fi
+
+current_version=$(ruby -r./lib/phlex/chatbot/version -e "print Phlex::Chatbot::VERSION")
+echo "Updating from $current_version to $1"
+sed -i"x" -e "s/$current_version/$1/" ./lib/phlex/chatbot/version.rb
+rm ./lib/phlex/chatbot/version.rbx
+bundle install
+mv .git/hooks/prepare-commit-msg .git/hooks/prepare-commit-msg.bak > /dev/null 2>&1
+git add ./lib/phlex/chatbot/version.rb Gemfile.lock
+git commit -m "build: updating version to $1"
+mv .git/hooks/prepare-commit-msg.bak .git/hooks/prepare-commit-msg > /dev/null 2>&1
+git tag "v$1" -m "build: version $1"
+git push origin master
+git push --tags
