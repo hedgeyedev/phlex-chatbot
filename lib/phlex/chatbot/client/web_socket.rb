@@ -8,7 +8,7 @@ module Phlex
     module Client
       class WebSocket
         def initialize(env, token)
-          @remote_ip = env["REMOTE_ADDR"]
+          @remote_ip = env["HTTP_X_FORWARDED_FOR"] || env["REMOTE_ADDR"]
           @token = token
           @client_socket = ActionCable::Connection::WebSocket.new(
             env,

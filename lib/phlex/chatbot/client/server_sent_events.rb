@@ -5,8 +5,8 @@ module Phlex
     module Client
       class ServerSentEvents
         def initialize(io, env)
-          @remote_ip = env["REMOTE_ADDR"]
           @io = io
+          @remote_ip = env["HTTP_X_FORWARDED_FOR"] || env["REMOTE_ADDR"]
 
           Chatbot.logger.info "[SSE] Connection opened from #{@remote_ip}"
         end
