@@ -14,7 +14,8 @@ module Phlex
 
         def view_template
           div class: "pcb__user-identifier" do
-            div(**classes("pcb__user-identifier-avatar", from_system?: "pcb__user-identifier-avatar__bot", from_user?: "pcb__user-identifier-avatar__user")) do
+            div(**classes("pcb__user-identifier-avatar", from_system?: "pcb__user-identifier-avatar__bot",
+from_user?: "pcb__user-identifier-avatar__user")) do
               @user_nickname
             end
             span(class: "pcb__user-identifier-name") { @user_name }

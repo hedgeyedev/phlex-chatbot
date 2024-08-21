@@ -72,7 +72,13 @@ module Phlex
       end
 
       def send_failure!(error)
-        send_event(:resp, data: [{ cmd: "append", element: Chat::Message.new(message: error.message).call }])
+        send_event(
+          :resp,
+          data: [
+            { cmd: "delete", selector: "#current_status" },
+            { cmd: "append", element: Chat::Message.new(message: error.message).call },
+          ],
+        )
         puts error.backtrace
       end
 

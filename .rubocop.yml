@@ -1,12 +1,4 @@
 AllCops:
-  TargetRubyVersion: 3.2
-
-# For all options see https://github.com/bbatsov/rubocop/tree/master/config
-
-require:
-  - rubocop-rspec
-
-AllCops:
   DisplayCopNames: true
   Exclude:
     - .*/**/*
@@ -14,6 +6,12 @@ AllCops:
     - Gemfile
     - db/schema.rb
   NewCops: enable
+  TargetRubyVersion: 3.2
+
+# For all options see https://github.com/bbatsov/rubocop/tree/master/config
+
+require:
+  - rubocop-rspec
 
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
@@ -47,8 +45,6 @@ Metrics/BlockLength:
 
 Metrics/ClassLength:
   Enabled: false
-  AllowedMethods:
-    - view_template
 
 Metrics/CyclomaticComplexity:
   Max: 10

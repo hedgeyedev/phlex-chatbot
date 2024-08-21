@@ -139,16 +139,10 @@ export default class extends Controller {
     if (message) {
       console.log("Sending message:", message)
 
-      const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      const data = { message }
-
       fetch(this.url("ask"), {
         method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrf,
-        }
+        body: JSON.stringify({ message }),
+        headers: { "Content-Type": "application/json" },
       }).then(response => {
         if (response.ok) {
           return null;
