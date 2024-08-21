@@ -12,7 +12,11 @@ module Phlex
                 rows: "1",
                 data: {
                   pcb_chat_form_target: "input",
-                  action: "keydown->pcb-chat-form#handleKeydown input->pcb-chat-form#resetTextareaHeight",
+                  action: <<~ACTIONS.squish,
+                    keydown.ctrl+enter->pcb-chat-form#handleKeyboardSubmit:prevent
+                    keydown.meta+enter->pcb-chat-form#handleKeyboardSubmit:prevent
+                    input->pcb-chat-form#resetTextareaHeight
+                  ACTIONS
                 },
               )
               button(type: "submit") { "Send" }
