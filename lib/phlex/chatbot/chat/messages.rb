@@ -15,10 +15,10 @@ module Phlex
             class: "pcb__chat-messages",
             data: {
               pcb_chat_form_target: "messagesContainer",
-              pcb_chat_messages_target: "messagesContainer"
-            }
+              pcb_chat_messages_target: "messagesContainer",
+            },
           ) do
-            @messages.each { |message| render Message.new(message:) }
+            @messages.each { |message| render Message.new(**message) }
           end
         end
       end

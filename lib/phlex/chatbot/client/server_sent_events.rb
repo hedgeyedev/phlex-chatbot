@@ -14,7 +14,7 @@ module Phlex
 
         def send_event(event, data)
           @io.write("event: #{event}\n")
-          @io.write(prefix_data(JSON.pretty_generate(data)))
+          @io.write(prefix_data(JSON.pretty_generate(data: data)))
           @io.write("\n\n") # required by the SSE protocol
         end
 

@@ -21,15 +21,14 @@ Gem::Specification.new do |spec|
 
   # Specify which files should be added to the gem when it is released.
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `bin/build`
     Dir["{dist,lib}/**/*", "CHANGELOG.md", "LICENSE.txt", "README.md"]
   end
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "actioncable", "~> 7.1"
   spec.add_dependency "concurrent-ruby", "~> 1.3"
   spec.add_dependency "phlex", "~> 1.10"
   spec.add_dependency "rack", "~> 3.1"
-  spec.add_dependency "actioncable", "~> 7.1"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
