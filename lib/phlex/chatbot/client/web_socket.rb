@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-require 'websocket/driver'
+require "English"
+require "english"
+require "websocket/driver"
 
 module Phlex
   module Chatbot
@@ -8,11 +10,10 @@ module Phlex
       class WebSocket
         def initialize(env, token)
           @token = token
-          @client_socket = ActionCable::Connection::ClientSocket.new(
+          @client_socket = ActionCable::Connection::WebSocket.new(
             env,
             self,
             ActionCable::Connection::StreamEventLoop.new,
-            nil,
           )
           @client_socket.rack_response
         end
@@ -27,15 +28,17 @@ module Phlex
         end
 
         def on_close(reason, code)
+          if (reason.nil? || reason.empty?) && $ERROR_INFO.nil?
+            reason = "No reason given"
+          elsif $ERROR_INFO
+            reason = $ERROR_INFO.message
+          end
+
           puts "Connection closed: #{code} - #{reason}"
         end
 
         def on_error(message)
           puts "Error: #{message}"
-        end
-
-        def write(s)
-          @client_socket.write(s)
         end
 
         def send_event(event, data)

@@ -4,9 +4,7 @@ require_relative "header"
 require_relative "input"
 require_relative "messages"
 
-require_relative "../chatbot_message_template"
-require_relative "../chatbot_thinking_template"
-require_relative "../user_message_template"
+require_relative "../chatbot_thinking"
 require_relative "../source_modal"
 
 module Phlex
@@ -47,9 +45,6 @@ module Phlex
 
         def templates!
           render Phlex::Chatbot::SourceModal.new
-          render Phlex::Chatbot::ChatbotMessageTemplate.new
-          render Phlex::Chatbot::ChatbotThinkingTemplate.new
-          render Phlex::Chatbot::UserMessageTemplate.new
         end
       end
     end

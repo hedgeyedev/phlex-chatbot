@@ -23,91 +23,126 @@ export default class extends Controller {
     this.scrollToBottom()
   }
 
-  setupSseConversation() {
-    this.conversation = new EventSource(this.url("join"));
-    this.conversation.onerror = event => {
-      console.log(`error: ${this.conversation.readyState}`);
-      this.messagesContainerTarget.classList.add('pcb__connection-error');
-    }
-    this.conversation.onopen = event => {
-      console.log(`opened: ${this.conversation.readyState}`);
-      this.messagesContainerTarget.classList.remove('pcb__connection-error');
+  alterUI(commands) {
+    if (!this.hasMessagesContainerTarget) {
+      console.error("Messages container not found");
+      return;
     }
 
-    this.conversation.addEventListener("status", event => {
-      const parsed = JSON.parse(event.data);
-      console.log("Received status:", parsed.message);
-      this.statusIndicator.textContent = parsed.message;
-    })
-    this.conversation.addEventListener("response", event => {
-      const parsed = JSON.parse(event.data);
-      console.log("Received response:", parsed.message);
-      this.showBotResponse(this.messagesContainerTarget.lastElementChild, parsed.message);
+    commands?.forEach((obj) => {
+      const { cmd, element, selector } = obj;
+      if (cmd === "append") {
+        this.messagesContainerTarget.insertAdjacentHTML("beforeEnd", element);
+      } else if (cmd === "delete") {
+        this.messagesContainerTarget.querySelector(selector)?.remove();
+      }
     });
-    this.conversation.addEventListener("failure", event => {
-      const parsed = JSON.parse(event.data);
-      console.log("Received failure:", parsed.message);
-      this.showBotResponse(this.messagesContainerTarget.lastElementChild, `ERR: ${parsed.message}`);
+
+    this.scrollToBottom()
+  }
+
+  dispatchClose(message, event) {
+    document.dispatchEvent(
+      new CustomEvent("phlex-chatbot:close", {
+        bubbles: true,
+        detail: { message, event },
+      })
+    );
+  }
+
+  dispatchError(message, event) {
+    document.dispatchEvent(
+      new CustomEvent("phlex-chatbot:error", {
+        bubbles: true,
+        detail: { message, event },
+      })
+    );
+  }
+
+  dispatchOpen(message, event) {
+    document.dispatchEvent(
+      new CustomEvent("phlex-chatbot:open", {
+        bubbles: true,
+        detail: { message, event },
+      })
+    );
+  }
+
+  dispatchResp(data) {
+    const parsed = JSON.parse(data);
+    document.dispatchEvent(
+      new CustomEvent("phlex-chatbot:resp", {
+        bubbles: true,
+        detail: { commands: parsed.data },
+      })
+    );
+  }
+
+  registerEventListeners() {
+    document.addEventListener("phlex-chatbot:close", (e) => {
+      console.debug(e);
+      this.messagesContainerTarget.classList.add('pcb__connection-error');
     });
+
+    document.addEventListener("phlex-chatbot:error", (e) => {
+      console.debug(e);
+      this.messagesContainerTarget.classList.add('pcb__connection-error');
+    });
+
+    document.addEventListener("phlex-chatbot:open", (e) => {
+      console.debug(e);
+      this.messagesContainerTarget.classList.remove('pcb__connection-error');
+    });
+
+    document.addEventListener("phlex-chatbot:resp", event => {
+      console.debug("Received resp:", event.detail);
+      this.alterUI(event.detail.commands);
+    });
+  }
+
+  setupSseConversation() {
+    this.conversation = new EventSource(this.url("join"));
+    this.registerEventListeners();
+
+    this.conversation.onerror = event => this.dispatchError("Connection error", event);
+    this.conversation.onopen = event => this.dispatchOpen("Connected", event);
+    this.conversation.onclose = event => this.dispatchClose("Closed", event);
+    this.conversation.addEventListener("resp", event => this.dispatchResp(event.data));
   }
 
   setupWebSocketConversation() {
     this.conversation = new WebSocket(this.url("join"));
+    this.registerEventListeners();
 
-    this.conversation.onerror = event => {
-      console.log(`error: ${this.conversation.readyState}`);
-      this.messagesContainerTarget.classList.add('pcb__connection-error');
-    }
-    this.conversation.onopen = event => {
-      console.log(`opened: ${this.conversation.readyState}`);
-      this.messagesContainerTarget.classList.remove('pcb__connection-error');
-    }
-    this.conversation.onmessage = event => {
-      const parsed = JSON.parse(event.data);
-      console.log("Received message:", parsed.data);
-      if (parsed.event === "status") {
-        this.statusIndicator.textContent = parsed.data.message;
-      } else if (parsed.event === "response") {
-        this.showBotResponse(this.messagesContainerTarget.lastElementChild, parsed.data.message);
-      } else if (parsed.event === "failure") {
-        this.showBotResponse(this.messagesContainerTarget.lastElementChild, `ERR: ${parsed.data.message}`);
-      }
-    }
+    this.conversation.onerror = event => this.dispatchError("Connection error", event);
+    this.conversation.onopen = event => this.dispatchOpen("Connected", event);
+    this.conversation.onclose = event => this.dispatchClose("Closed", event);
+    this.conversation.onmessage = event => this.dispatchResp(event.data);
   }
 
   submitWebSocket(event) {
     event.preventDefault();
     const message = this.inputTarget.value.trim();
+    this.resetTextarea();
 
     if (message) {
       console.log("Sending message:", message);
-      this.addMessageToUI(message, true);
-      this.resetTextarea();
-
       this.conversation.send(message);
     }
   }
 
   submitSse(event) {
-    event.preventDefault()
-    const message = this.inputTarget.value.trim()
+    event.preventDefault();
+    const message = this.inputTarget.value.trim();
+    this.resetTextarea();
 
     if (message) {
       console.log("Sending message:", message)
-      this.addMessageToUI(message, true)
-      this.resetTextarea();
-
-      const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      const data = { message }
-      const element = this.prepareForResponse();
 
       fetch(this.url("ask"), {
         method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrf,
-        }
+        body: JSON.stringify({ message }),
+        headers: { "Content-Type": "application/json" },
       }).then(response => {
         if (response.ok) {
           return null;
@@ -133,45 +168,6 @@ export default class extends Controller {
   resetTextareaHeight() {
     this.inputTarget.style.height = 'auto'
     this.inputTarget.style.height = this.inputTarget.scrollHeight + 'px'
-  }
-
-  addMessageToUI(content, fromUser) {
-    if (!this.hasMessagesContainerTarget) {
-      console.error("Messages container not found")
-      return
-    }
-
-    const message = document.getElementById(fromUser ? 'user-message-template' : 'chatbot-message-template')
-      .content.children[0].cloneNode(true);
-    message.querySelector('.pcb__message__content').innerText = content;
-
-    this.messagesContainerTarget.appendChild(message);
-
-    if (!fromUser) {
-      message.classList.add('pcb__message__bot-appear')
-    }
-
-    this.scrollToBottom()
-  }
-
-  prepareForResponse() {
-    if (!this.hasMessagesContainerTarget) {
-      console.error("Messages container not found")
-      return
-    }
-
-    const message = document.getElementById('chatbot-thinking-template').content.children[0].cloneNode(true);
-    this.messagesContainerTarget.appendChild(message);
-    this.scrollToBottom()
-
-    this.statusIndicator = message.querySelector('.pcb__status-indicator')
-
-    return message;
-  }
-
-  showBotResponse(botMessageElement, userMessage) {
-    botMessageElement.remove();
-    this.addMessageToUI(userMessage, false);
   }
 
   scrollToBottom() {

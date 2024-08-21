@@ -16,6 +16,7 @@ module Phlex
         the_bot = bots[token]
         return false unless the_bot
 
+        the_bot.send_ack!(message: message)
         the_bot.send_status!(message: "Asking the oracle")
 
         future = Concurrent::Promises.future_on(:io, the_bot, message) do |bot, data|
@@ -59,24 +60,46 @@ module Phlex
       def subscribe_with_sse_io(io)
         client = Client::ServerSentEvents.new(io)
         @subscribers << client
-        send_event(:joined, data: {})
+        send_event(:joined, data: [])
       end
 
-      # Note: We don't really understand why we have to do it this way for SSE
+      # NOTE: We don't really understand why we have to do it this way for SSE
       alias call subscribe_with_sse_io
 
       # This is public for the sake of Rack's hijack API. It should not be used directly.
+      def send_ack!(message:)
+        send_event(:resp, data: [{ cmd: "append", element: Chat::Message.new(message: message, from_user: true).call }])
+      end
+
       def send_failure!(error)
-        send_event(:failure, data: { message: error.message })
+        send_event(
+          :resp,
+          data: [
+            { cmd: "delete", selector: "#current_status" },
+            { cmd: "append", element: Chat::Message.new(message: error.message).call },
+          ],
+        )
         puts error.backtrace
       end
 
       def send_response!(message:, sources: nil)
-        send_event(:response, data: { message: message, sources: sources })
+        send_event(
+          :resp,
+          data: [
+            { cmd: "delete", selector: "#current_status" },
+            { cmd: "append", element: Chat::Message.new(message: message, sources: sources).call },
+          ],
+        )
       end
 
       def send_status!(message:)
-        send_event(:status, data: { message: message })
+        send_event(
+          :resp,
+          data: [
+            { cmd: "delete", selector: "#current_status" },
+            { cmd: "append", element: ChatbotThinking.new(message).call },
+          ],
+        )
       end
 
       def start_conversation!(data)
@@ -87,7 +110,7 @@ module Phlex
 
       def subscribe(client)
         @subscribers << client
-        send_event(:joined, data: {})
+        send_event(:joined, data: [])
       end
 
       private
@@ -95,7 +118,7 @@ module Phlex
       def send_event(event, data:)
         removals = Set.new
         subscribers.each do |sub|
-          sub.send_event(event, data.merge(subscribers: subscribers.size))
+          sub.send_event(event, data)
         rescue Errno::EPIPE => _e
           removals << sub
         end

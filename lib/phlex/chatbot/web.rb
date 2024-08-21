@@ -27,7 +27,19 @@ module Phlex
 
       private
 
-      def on_get
+      def css
+        File.read(File.join(ROOT_DIR, "dist", "bot.css"))
+      end
+
+      def js
+        File.read(File.join(ROOT_DIR, "dist", "bot.js"))
+      end
+
+      def js_map
+        File.read(File.join(ROOT_DIR, "dist", "bot.js.map"))
+      end
+
+      def on_get # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
         case path
         when "/bot.css"
           [200, { "content-type" => "text/css" }, [css]]
@@ -41,13 +53,17 @@ module Phlex
 
           if @env["HTTP_UPGRADE"]&.starts_with?("websocket")
             # WebSocket
+            return respond_not_found! unless valid_origin?
+
             bot.subscribe(Client::WebSocket.new(@env, bot.token))
-            [ -1, {}, [] ]
-          else
+            [-1, {}, []]
+          elsif @env["HTTP_ACCEPT"]&.include?("text/event-stream")
             # SSE
             # Note: we don't really understand why we have to return bot as part of the response but that is how the
             # client gets subscribed to the channel.
             [200, sse_headers, bot]
+          else
+            respond_not_found!
           end
         else
           respond_not_found!
@@ -57,19 +73,19 @@ module Phlex
       def on_post
         case path
         when %r{/ask/([a-fA-F0-9]+$)}
-          ok = true
+          return respond_not_found! unless valid_origin?
 
-          BotConversation.converse(Regexp.last_match(1), @env["rack.input"].read)
-
-          if ok
+          if BotConversation.converse(Regexp.last_match(1), JSON.parse(@env["rack.input"].read)["message"])
             [200, { "content-type" => "text/plain" }, ["ok"]]
           else
-            [404, { "content-type" => "text/plain" }, ["not found"]]
+            respond_not_found!
           end
         else
-          [404, { "content-type" => "text/plain" }, ["not found"]]
+          respond_not_found!
         end
       end
+
+      def path = @env["PATH_INFO"]
 
       def request_method = @env["REQUEST_METHOD"].upcase
 
@@ -77,26 +93,16 @@ module Phlex
         [404, { "content-type" => "text/plain" }, ["not found"]]
       end
 
-      def path = @env["PATH_INFO"]
-
-      def css
-        File.read(File.join(ROOT_DIR, "dist", "bot.css"))
-      end
-
-      def js
-        File.read(File.join(ROOT_DIR, "dist", "bot.js"))
-      end
-
-      def js_map
-        File.read(File.join(ROOT_DIR, "dist", "bot.js.map"))
-      end
-
       def sse_headers
         {
-          "content-type" => "text/event-stream",
+          "content-type"      => "text/event-stream",
           "x-accel-buffering" => "no",
-          "last-modified" => Time.now.httpdate
+          "last-modified"     => Time.now.httpdate,
         }
+      end
+
+      def valid_origin?
+        @env["HTTP_ORIGIN"].include?(@env["HTTP_HOST"])
       end
     end
   end
