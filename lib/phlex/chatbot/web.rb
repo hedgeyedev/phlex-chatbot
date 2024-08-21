@@ -59,7 +59,7 @@ module Phlex
             # SSE
             # Note: we don't really understand why we have to return bot as part of the response but that is how the
             # client gets subscribed to the channel.
-            [200, sse_headers, bot]
+            [200, sse_headers, ->(io) { bot.subscribe_with_sse_io(io, @env) }]
           else
             respond_not_found!
           end
