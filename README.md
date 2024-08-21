@@ -135,6 +135,15 @@ While you are actively developing you'll likely want to watch for asset changes:
 
     $ npm run watch-all
 
+### Building new versions
+
+1. edit `lib/phlex/chatbot/version.rb`
+1. run `bundle install` (which will update the version in Gemfile.lock)
+1. commit
+1. tag with new version
+1. push
+1. create a release in GitHub
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/hedgeyedev/phlex-chatbot.
