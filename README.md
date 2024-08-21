@@ -22,16 +22,22 @@ You will need to mount the chatbot app into your Rack application, which will di
 host app's configuration.
 
 In Rails, update your `config/routes.rb` file by adding:
+```ruby
+mount Phlex::Chatbot::Web, at: "/phlex-chatbot"
+```
 
-    $ mount Phlex::Chatbot::Web, at: "/phlex-chatbot"
+Create an initializer `config/initializers/phlex_chatbot.rb` to set your logger:
+```ruby
+Phlex::Chatbot.logger = Rails.logger
+```
 
 In other Rack applications, you might do something like the following or consult your framework's
 specific instructions for mounting Rack apps:
 
 ```ruby
-  map 'phlex-chatbot' do
-    use Phlex::Chatbot::Web
-  end
+map 'phlex-chatbot' do
+  use Phlex::Chatbot::Web
+end
 ```
 
 The path at which you host the chatbot is up to you, here we've named it `phlex-chatbot`. Somewhere in

@@ -26,8 +26,8 @@ module Phlex
         end
 
         future
-          .on_fulfillment { |result| puts result }
-          .on_rejection { |error| puts error }
+          .on_fulfillment { |result| Chatbot.logger.debug result }
+          .on_rejection { |error| Chatbot.logger.error error }
 
         true
       end
@@ -72,6 +72,7 @@ module Phlex
       end
 
       def send_failure!(error)
+        Chatbot.logger.error error
         send_event(
           :resp,
           data: [
@@ -79,7 +80,6 @@ module Phlex
             { cmd: "append", element: Chat::Message.new(message: error.message).call },
           ],
         )
-        puts error.backtrace
       end
 
       def send_response!(message:, sources: nil)

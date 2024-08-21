@@ -18,7 +18,7 @@ module Phlex
         end
 
         def on_open
-          puts "Connection opened"
+          Chatbot.logger.debug "Connection opened"
         end
 
         def on_message(message)
@@ -26,7 +26,7 @@ module Phlex
             @client_socket.transmit("pong")
             return
           end
-          puts "Received message: #{message}"
+          Chatbot.logger.debug "Received message: #{message}"
           BotConversation.converse(@token, message)
         end
 
@@ -37,11 +37,11 @@ module Phlex
             reason = $ERROR_INFO.message
           end
 
-          puts "Connection closed: #{code} - #{reason}"
+          Chatbot.logger.debug "Connection closed: #{code} - #{reason}"
         end
 
         def on_error(message)
-          puts "Error: #{message}"
+          Chatbot.logger.error "Error: #{message}"
         end
 
         def send_event(event, data)
