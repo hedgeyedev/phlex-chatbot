@@ -22,6 +22,10 @@ module Phlex
         end
 
         def on_message(message)
+          if message == "ping"
+            @client_socket.transmit("pong")
+            return
+          end
           puts "Received message: #{message}"
           BotConversation.converse(@token, message)
         end

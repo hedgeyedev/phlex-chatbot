@@ -7,6 +7,7 @@ export default class extends Controller {
     conversationToken: String,
     driver: { type: String, default: "websocket" },
     endpoint: String,
+    pingMs: { type: Number, default: 17000 },
   }
 
   connect() {
@@ -149,7 +150,20 @@ export default class extends Controller {
     this.conversation.onerror = event => this.dispatchError("Connection error", event);
     this.conversation.onopen = event => this.dispatchOpen("Connected", event);
     this.conversation.onclose = event => this.dispatchClose("Closed", event);
-    this.conversation.onmessage = event => this.dispatchResp(event.data);
+    this.conversation.onmessage = event => {
+      if (event.data === "pong") { return; }
+      this.dispatchResp(event.data);
+    }
+
+    if (!this.pingTask) {
+      this.pingTask = setInterval(() => {
+        if (this.conversation.readyState !== WebSocket.OPEN) {
+          return;
+        }
+
+        this.conversation.send("ping");
+      }, this.pingMsValue);
+    }
   }
 
   submitWebSocket(event) {
