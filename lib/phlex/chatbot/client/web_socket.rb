@@ -8,6 +8,7 @@ module Phlex
     module Client
       class WebSocket
         def initialize(env, token)
+          @remote_ip = env["REMOTE_ADDR"]
           @token = token
           @client_socket = ActionCable::Connection::WebSocket.new(
             env,
@@ -18,7 +19,7 @@ module Phlex
         end
 
         def on_open
-          Chatbot.logger.debug "Connection opened"
+          Chatbot.logger.info "[WS] Connection opened from #{@remote_ip}"
         end
 
         def on_message(message)
@@ -26,7 +27,7 @@ module Phlex
             @client_socket.transmit("pong")
             return
           end
-          Chatbot.logger.debug "Received message: #{message}"
+          Chatbot.logger.debug "[WS] Received message: #{message}"
           BotConversation.converse(@token, message)
         end
 
@@ -37,11 +38,11 @@ module Phlex
             reason = $ERROR_INFO.message
           end
 
-          Chatbot.logger.debug "Connection closed: #{code} - #{reason}"
+          Chatbot.logger.info "[WS] Connection to #{@remote_ip} closed: #{code} - #{reason}"
         end
 
         def on_error(message)
-          Chatbot.logger.error "Error: #{message}"
+          Chatbot.logger.error "[WS] Error: #{message}"
         end
 
         def send_event(event, data)

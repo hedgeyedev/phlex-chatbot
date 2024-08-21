@@ -25,9 +25,7 @@ module Phlex
           bot.send_failure!(e)
         end
 
-        future
-          .on_fulfillment { |result| Chatbot.logger.debug result }
-          .on_rejection { |error| Chatbot.logger.error error }
+        future.on_rejection { |error| Chatbot.logger.error error }
 
         true
       end
@@ -57,16 +55,12 @@ module Phlex
         @subscribers = Concurrent::Set.new
       end
 
-      def subscribe_with_sse_io(io)
-        client = Client::ServerSentEvents.new(io)
+      def subscribe_with_sse_io(io, env)
+        client = Client::ServerSentEvents.new(io, env)
         @subscribers << client
         send_event(:joined, data: [])
       end
 
-      # NOTE: We don't really understand why we have to do it this way for SSE
-      alias call subscribe_with_sse_io
-
-      # This is public for the sake of Rack's hijack API. It should not be used directly.
       def send_ack!(message:)
         send_event(:resp, data: [{ cmd: "append", element: Chat::Message.new(message: message, from_user: true).call }])
       end
