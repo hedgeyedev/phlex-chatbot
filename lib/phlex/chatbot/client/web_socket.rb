@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "English"
-require "english"
 require "websocket/driver"
 
 module Phlex
