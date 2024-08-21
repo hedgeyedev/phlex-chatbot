@@ -7,10 +7,15 @@ export default class extends Controller {
     conversationToken: String,
     driver: { type: String, default: "websocket" },
     endpoint: String,
+    pingMs: { type: Number, default: 17000 },
   }
 
   connect() {
-    console.log("ChatFormController connected")
+    this.reconnectAttempts = 0;
+
+    console.debug("ChatFormController connected")
+    this.registerEventListeners();
+
     if (this.driverValue === "sse") {
       this.setup = this.setupSseConversation;
       this.submit = this.submitSse;
@@ -21,6 +26,21 @@ export default class extends Controller {
     this.setup();
     this.resetTextarea()
     this.scrollToBottom()
+  }
+
+  reconnect() {
+    if (this.reconnecting) {
+      return;
+    }
+
+    this.reconnecting = true;
+    this.reconnectAttempts += 1;
+    const timeout = Math.min(5, ((this.reconnectAttempts - 1) ** 1.3));
+    console.debug(`Reconnecting in ${timeout}s (attempt ${this.reconnectAttempts})`);
+    setTimeout(() => {
+      this.setup();
+      this.reconnecting = false;
+    }, timeout * 1000);
   }
 
   alterUI(commands) {
@@ -79,18 +99,25 @@ export default class extends Controller {
   }
 
   registerEventListeners() {
-    document.addEventListener("phlex-chatbot:close", (e) => {
-      console.debug(e);
-      this.messagesContainerTarget.classList.add('pcb__connection-error');
-    });
 
-    document.addEventListener("phlex-chatbot:error", (e) => {
+    const disconnectCallback = (e) => {
       console.debug(e);
-      this.messagesContainerTarget.classList.add('pcb__connection-error');
-    });
+      this.reconnect();
+      setTimeout(() => {
+        if (this.conversation.readyState !== EventSource.OPEN || this.conversation.readyState !== WebSocket.OPEN) {
+          this.disableInput();
+          this.messagesContainerTarget.classList.add('pcb__connection-error');
+        }
+      }, 0);
+    };
+
+    document.addEventListener("phlex-chatbot:close", disconnectCallback);
+    document.addEventListener("phlex-chatbot:error", disconnectCallback);
 
     document.addEventListener("phlex-chatbot:open", (e) => {
       console.debug(e);
+      this.reconnectAttempts = 0;
+      this.enableInput();
       this.messagesContainerTarget.classList.remove('pcb__connection-error');
     });
 
@@ -101,9 +128,12 @@ export default class extends Controller {
   }
 
   setupSseConversation() {
-    this.conversation = new EventSource(this.url("join"));
-    this.registerEventListeners();
+    if (this.conversation?.readyState === EventSource.OPEN) {
+      console.debug("sse already connected");
+      return;
+    }
 
+    this.conversation = new EventSource(this.url("join"));
     this.conversation.onerror = event => this.dispatchError("Connection error", event);
     this.conversation.onopen = event => this.dispatchOpen("Connected", event);
     this.conversation.onclose = event => this.dispatchClose("Closed", event);
@@ -111,13 +141,29 @@ export default class extends Controller {
   }
 
   setupWebSocketConversation() {
-    this.conversation = new WebSocket(this.url("join"));
-    this.registerEventListeners();
+    if (this.conversation?.readyState === WebSocket.OPEN) {
+      console.debug("websocket already connected");
+      return;
+    }
 
+    this.conversation = new WebSocket(this.url("join"));
     this.conversation.onerror = event => this.dispatchError("Connection error", event);
     this.conversation.onopen = event => this.dispatchOpen("Connected", event);
     this.conversation.onclose = event => this.dispatchClose("Closed", event);
-    this.conversation.onmessage = event => this.dispatchResp(event.data);
+    this.conversation.onmessage = event => {
+      if (event.data === "pong") { return; }
+      this.dispatchResp(event.data);
+    }
+
+    if (!this.pingTask) {
+      this.pingTask = setInterval(() => {
+        if (this.conversation.readyState !== WebSocket.OPEN) {
+          return;
+        }
+
+        this.conversation.send("ping");
+      }, this.pingMsValue);
+    }
   }
 
   submitWebSocket(event) {
@@ -126,7 +172,7 @@ export default class extends Controller {
     this.resetTextarea();
 
     if (message) {
-      console.log("Sending message:", message);
+      console.debug("Sending message:", message);
       this.conversation.send(message);
     }
   }
@@ -137,7 +183,7 @@ export default class extends Controller {
     this.resetTextarea();
 
     if (message) {
-      console.log("Sending message:", message)
+      console.debug("Sending message:", message)
 
       fetch(this.url("ask"), {
         method: 'POST',
@@ -153,10 +199,19 @@ export default class extends Controller {
     }
   }
 
-  handleKeydown(event) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault()
-      this.submit(event)
+  disableInput() {
+    this.disabled = true;
+    this.inputTarget.parentElement.querySelector('button').disabled = true;
+  }
+
+  enableInput() {
+    this.disabled = false;
+    this.inputTarget.parentElement.querySelector('button').disabled = false;
+  }
+
+  handleKeyboardSubmit(event) {
+    if (!this.disabled) {
+      this.submit(event);
     }
   }
 
