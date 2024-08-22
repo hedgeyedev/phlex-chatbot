@@ -5,60 +5,13 @@ require_relative "client/web_socket"
 
 module Phlex
   module Chatbot
-    class BotConversation
-      attr_reader :callback, :subscribers, :token
+    class Channel
+      attr_reader :callback, :clients, :channel_id
 
-      def self.bots
-        @bots ||= Concurrent::Hash.new
-      end
-
-      def self.converse(token, message)
-        the_bot = bots[token]
-        return false unless the_bot
-
-        the_bot.send_ack!(message: message)
-        the_bot.send_status!(message: "Asking the oracle")
-
-        future = Concurrent::Promises.future_on(:io, the_bot, message) do |bot, data|
-          bot.start_conversation!(data)
-        rescue StandardError => e
-          bot.send_failure!(e)
-        end
-
-        future.on_rejection { |error| Chatbot.logger.error error }
-
-        true
-      end
-
-      def self.create(id, callback)
-        # TODO: salt this thing, track it, expire it, invalidate it, etc.
-        (bots[id] ||= new(id, callback)).token
-      end
-
-      def self.find(token)
-        bots[token]
-      end
-
-      def self.destroy(token)
-        bots.delete(token)
-      end
-
-      def self.send_event(token, event, data:)
-        bot = bots[token]
-        bot&.send_event(event, data: data)
-        !bot.nil?
-      end
-
-      def initialize(token, callback)
-        @callback    = callback
-        @token       = token
-        @subscribers = Concurrent::Set.new
-      end
-
-      def subscribe_with_sse_io(io, env)
-        client = Client::ServerSentEvents.new(io, env)
-        @subscribers << client
-        send_event(:joined, data: [])
+      def initialize(channel_id, callback)
+        @callback   = callback
+        @channel_id = channel_id
+        @clients    = Concurrent::Set.new
       end
 
       def send_ack!(message:)
@@ -103,24 +56,25 @@ module Phlex
       end
 
       def subscribe(client)
-        @subscribers << client
+        @clients << client
         send_event(:joined, data: [])
       end
 
-      private
+      protected
 
       def send_event(event, data:)
         removals = Set.new
-        subscribers.each do |sub|
-          sub.send_event(event, data)
+        clients.each do |client|
+          # one of ServerSentEvents or WebSocket
+          client.send_event(event, data)
         rescue Errno::EPIPE => _e
           removals << sub
         end
         removals.each do |e|
           e.close rescue nil # rubocop:disable Style/RescueModifier
-          subscribers.delete(e)
+          clients.delete(e)
         end
-        self.class.destroy(token) if subscribers.empty?
+        Switchboard.destroy(channel_id) if clients.empty?
       end
     end
   end

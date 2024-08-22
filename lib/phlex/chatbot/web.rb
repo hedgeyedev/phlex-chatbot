@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "client/web_socket"
+require_relative "client/server_sent_events"
 
 module Phlex
   module Chatbot
@@ -46,20 +47,16 @@ module Phlex
         when "/bot.js.map"
           [200, { "content-type" => "application/javascript" }, [js_map]]
         when %r{/join/([a-fA-F0-9]+$)}
-          bot = BotConversation.find(Regexp.last_match(1))
-          return respond_not_found! unless bot
+          channel = Switchboard.find(Regexp.last_match(1))
+          return respond_not_found! unless channel
 
           if @env["HTTP_UPGRADE"]&.starts_with?("websocket")
-            # WebSocket
             return respond_not_found! unless valid_origin?
 
-            bot.subscribe(Client::WebSocket.new(@env, bot.token))
+            channel.subscribe(Client::WebSocket.new(@env, channel.channel_id))
             [-1, {}, []]
           elsif @env["HTTP_ACCEPT"]&.include?("text/event-stream")
-            # SSE
-            # Note: we don't really understand why we have to return bot as part of the response but that is how the
-            # client gets subscribed to the channel.
-            [200, sse_headers, ->(io) { bot.subscribe_with_sse_io(io, @env) }]
+            [200, sse_headers, ->(io) { channel.subscribe(Client::ServerSentEvents.new(io, @env)) }]
           else
             respond_not_found!
           end
@@ -73,7 +70,7 @@ module Phlex
         when %r{/ask/([a-fA-F0-9]+$)}
           return respond_not_found! unless valid_origin?
 
-          if BotConversation.converse(Regexp.last_match(1), JSON.parse(@env["rack.input"].read)["message"])
+          if Switchboard.converse(Regexp.last_match(1), JSON.parse(@env["rack.input"].read)["message"])
             [200, { "content-type" => "text/plain" }, ["ok"]]
           else
             respond_not_found!

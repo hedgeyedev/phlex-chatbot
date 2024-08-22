@@ -24,11 +24,12 @@ module Phlex
 
         def on_message(message)
           if message == "ping"
+            Switchboard.extend_ttl(@token)
             @client_socket.transmit("pong")
             return
           end
           Chatbot.logger.debug "[WS] Received message: #{message}"
-          BotConversation.converse(@token, message)
+          Switchboard.converse(@token, message)
         end
 
         def on_close(reason, code)
