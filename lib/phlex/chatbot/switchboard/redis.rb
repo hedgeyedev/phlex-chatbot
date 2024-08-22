@@ -14,7 +14,7 @@ module Phlex
 
         def initialize
           @channels   = Concurrent::Hash.new
-          @redis_db   = ::Redis.new
+          @redis_db   = ENV["REDIS_URL"] ? ::Redis.new(url: ENV["REDIS_URL"]) : ::Redis.new
           @subscriber = RedisSubscriber.spawn(name: :redis_subscriber, args: [@redis_db])
         end
 
