@@ -29,7 +29,7 @@ module Phlex
 
         def find(channel_id)
           unless extend_ttl(channel_id)
-            @channels.delete(channel_id)
+            channels.delete(channel_id)
             return
           end
 
