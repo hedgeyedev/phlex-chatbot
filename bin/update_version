@@ -1,7 +1,7 @@
 #/usr/bin/env bash
 
-if [ $# -ne 1 ]; then
-  echo "Usage: $0 <version>"
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <version> <git remote name (default: origin)>"
   exit 1
 fi
 
@@ -12,15 +12,18 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+new_version=$1
+git_remote=${2:-origin}
 current_version=$(ruby -r./lib/phlex/chatbot/version -e "print Phlex::Chatbot::VERSION")
-echo "Updating from $current_version to $1"
-sed -i"x" -e "s/$current_version/$1/" ./lib/phlex/chatbot/version.rb
+
+echo "Updating from ${current_version} to ${new_version}"
+sed -i"x" -e "s/${current_version}/${new_version}/" ./lib/phlex/chatbot/version.rb
 rm ./lib/phlex/chatbot/version.rbx
 bundle install
 mv .git/hooks/prepare-commit-msg .git/hooks/prepare-commit-msg.bak > /dev/null 2>&1
 git add ./lib/phlex/chatbot/version.rb Gemfile.lock
-git commit -m "build: updating version to $1"
+git commit -m "build: updating version to ${new_version}"
 mv .git/hooks/prepare-commit-msg.bak .git/hooks/prepare-commit-msg > /dev/null 2>&1
-git tag "v$1" -m "build: version $1"
-git push origin master
+git tag "v${new_version}" -m "build: version ${new_version}"
+git push ${git_remote} master
 git push --tags
