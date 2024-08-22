@@ -68,7 +68,7 @@ module Phlex
           # one of ServerSentEvents or WebSocket
           client.send_event(event, data)
         rescue Errno::EPIPE => _e
-          removals << sub
+          removals << client
         end
         removals.each do |e|
           e.close rescue nil # rubocop:disable Style/RescueModifier
