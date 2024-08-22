@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "actioncable", "~> 7.1"
   spec.add_dependency "concurrent-ruby", "~> 1.3"
+  spec.add_dependency "concurrent-ruby-edge", "~> 0.7.1"
   spec.add_dependency "phlex", "~> 1.10"
   spec.add_dependency "rack", "~> 3.1"
 

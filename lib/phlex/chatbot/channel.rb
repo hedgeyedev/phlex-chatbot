@@ -6,12 +6,12 @@ require_relative "client/web_socket"
 module Phlex
   module Chatbot
     class Channel
-      attr_reader :callback, :subscribers, :channel_id
+      attr_reader :callback, :clients, :channel_id
 
       def initialize(channel_id, callback)
-        @callback    = callback
-        @channel_id  = channel_id
-        @subscribers = Concurrent::Set.new
+        @callback   = callback
+        @channel_id = channel_id
+        @clients    = Concurrent::Set.new
       end
 
       def send_ack!(message:)
@@ -56,24 +56,25 @@ module Phlex
       end
 
       def subscribe(client)
-        @subscribers << client
+        @clients << client
         send_event(:joined, data: [])
       end
 
-      private
+      protected
 
       def send_event(event, data:)
         removals = Set.new
-        subscribers.each do |sub|
-          sub.send_event(event, data)
+        clients.each do |client|
+          # one of ServerSentEvents or WebSocket
+          client.send_event(event, data)
         rescue Errno::EPIPE => _e
           removals << sub
         end
         removals.each do |e|
           e.close rescue nil # rubocop:disable Style/RescueModifier
-          subscribers.delete(e)
+          clients.delete(e)
         end
-        self.class.destroy(channel_id) if subscribers.empty?
+        Switchboard.destroy(channel_id) if clients.empty?
       end
     end
   end

@@ -12,9 +12,12 @@ module Phlex
           @channels ||= Concurrent::Hash.new
         end
 
-        def create(id, callback)
-          # TODO: salt this thing, track it, expire it, invalidate it, etc.
-          (channels[id] ||= Channel.new(id, callback)).channel_id
+        def create(channel_id)
+          (channels[channel_id] ||= Channel.new(channel_id, Phlex::Chatbot.callback)).channel_id
+        end
+
+        def extend_ttl(channel_id)
+          nil
         end
 
         def find(channel_id)

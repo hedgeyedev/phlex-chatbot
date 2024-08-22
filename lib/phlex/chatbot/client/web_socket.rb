@@ -24,6 +24,7 @@ module Phlex
 
         def on_message(message)
           if message == "ping"
+            Switchboard.extend_ttl(@token)
             @client_socket.transmit("pong")
             return
           end

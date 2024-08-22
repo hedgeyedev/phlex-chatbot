@@ -5,19 +5,23 @@ module Phlex
     module Switchboard
 
       def self.converse(channel_id, message)
-        InMemory.instance.converse(channel_id, message)
+        Phlex::Chatbot.switchboard.converse(channel_id, message)
       end
 
-      def self.create(id, callback)
-        InMemory.instance.create(id, callback)
+      def self.create(id)
+        Phlex::Chatbot.switchboard.create(Digest::SHA256.hexdigest(id))
       end
 
       def self.destroy(channel_id)
-        InMemory.instance.destroy(channel_id)
+        Phlex::Chatbot.switchboard.destroy(channel_id)
+      end
+
+      def self.extend_ttl(channel_id)
+        Phlex::Chatbot.switchboard.extend_ttl(channel_id)
       end
 
       def self.find(channel_id)
-        InMemory.instance.find(channel_id)
+        Phlex::Chatbot.switchboard.find(channel_id)
       end
 
       class Base
