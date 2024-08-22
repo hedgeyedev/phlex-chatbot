@@ -28,7 +28,7 @@ module Phlex
             return
           end
           Chatbot.logger.debug "[WS] Received message: #{message}"
-          BotConversation.converse(@token, message)
+          Switchboard.converse(@token, message)
         end
 
         def on_close(reason, code)

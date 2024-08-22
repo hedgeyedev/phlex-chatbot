@@ -68,7 +68,7 @@ The chat components receive the same set of arguments:
 To allow your users to have a conversation with the chatbot, your app will need to get a token:
 
 ```ruby
-token = Phlex::Chatbot::BotConversation.create(user.email_address, callback)
+token = Phlex::Chatbot::Switchboard.create(user.email_address, callback)
 ```
 
 Here we are passing the email address of a `User` in the system as the application's identifier for this
@@ -83,7 +83,7 @@ message. Here is an example that sends the chatbot a status message, processes t
 `langchainrb` and `ruby-openai`, and finally sends a final response.
 
 ```ruby
-Phlex::Chatbot::BotConversation.create(
+Phlex::Chatbot::Switchboard.create(
   user.email,
   lambda do |bot, incoming_message|
     bot.send_status!(message: "I got your message, just a sec...")
@@ -120,7 +120,7 @@ class FullTextSearch
   end
 end
 
-Phlex::Chatbot::BotConversation.create(user.email, FullTextSearch)
+Phlex::Chatbot::Switchboard.create(user.email, FullTextSearch)
 ```
 
 You can converse with your chatbot in three ways:
