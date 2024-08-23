@@ -12,10 +12,14 @@ module Phlex
 
         TEN_MINUTES = 10 * 60 # seconds
 
+        def self.new_redis_connection
+          ::Redis.new(url: ENV.fetch("REDIS_URL", "redis://localhost:6379/0"))
+        end
+
         def initialize
           @channels   = Concurrent::Hash.new
-          @redis_db   = ENV["REDIS_URL"] ? ::Redis.new(url: ENV["REDIS_URL"]) : ::Redis.new
-          @subscriber = RedisSubscriber.spawn(name: :redis_subscriber, args: [@redis_db])
+          @redis_db   = self.class.new_redis_connection
+          @subscriber = RedisSubscriber.spawn(name: :redis_subscriber)
         end
 
         def create(id)
@@ -59,9 +63,10 @@ module Phlex
         class RedisSubscriber < Concurrent::Actor::RestartingContext
           CHANNEL_NAME = "phlex:chatbot:switchboard:redis"
 
-          def initialize(redis_db)
-            @redis_db = redis_db
-            Thread.start do
+          def initialize
+            @redis_db = Switchboard::Redis.new_redis_connection
+            executor = Concurrent::SingleThreadExecutor.new(auto_terminate: true)
+            Concurrent::Promises.future_on(executor, @redis_db) do |redis|
               Phlex::Chatbot.logger.info "Starting up Redis subscriber"
               @redis_db.subscribe(CHANNEL_NAME) do |on|
                 on.message do |_, msg|
@@ -74,7 +79,6 @@ module Phlex
                   channel&.broadcast_event(decoded_msg[:event], data: decoded_msg[:data])
                 end
               end
-            ensure
               Phlex::Chatbot.logger.info "Shutting down Redis subscriber"
             end
           end
@@ -82,6 +86,8 @@ module Phlex
           def on_message(message)
             # TODO: replace the case!!
             case message
+            in :terminate, reason
+              terminate(reason)
             in :joined, channel_id, data
               @redis_db.publish(CHANNEL_NAME, { channel_id: channel_id, event: :joined, data: data }.to_json)
             in :resp, channel_id, data
