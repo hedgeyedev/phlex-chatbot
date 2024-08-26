@@ -1,1 +1,3 @@
-- create rake task to import stylesheets to containing app (e.g. rails phlex-chatbot:install)
+- Commit specs
+- Finalize & commit architecture diagram
+- Create rake task to import stylesheets to containing app (e.g. rails phlex-chatbot:install)?
