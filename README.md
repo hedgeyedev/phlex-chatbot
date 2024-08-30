@@ -129,6 +129,22 @@ You can converse with your chatbot in three ways:
 1. `#send_failure!` - similar to `#send_response!` this will replace the bot's temporary response but allows
    the UI to style the response differently, indicating to the user that something unexpected has occured
 
+### Channel#send_status!
+This message receives a `String` which is broadcast to all chat subscribers. The chatbot will change the title
+of the bot response placeholder with this message. It is expected that the "backend" will either broadcast
+a final response or a failure at some point after this.
+
+### Channel#send_response!
+This message receives `message: String` and `sources: Array<String>`.
+  - `message: String` - the message you want to broadcast to all chat subscribers. Sources can be link with the
+    pattern `[1]`, `[2]`, `[3]`, etc. These text patterns will be replaced with the corresponding source from
+    the `sources` argument, if supplied. The links are one-based, not zero-based.
+  - `sources: Array<String>` - links to source data in the `message`
+
+### Channel#send_failure!
+This message receives an Exception object. Its `message` is broadcast to all chat subscribers. This will cause
+the chatbot placeholder to be finalized with this message. No other response is needed after this point.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
