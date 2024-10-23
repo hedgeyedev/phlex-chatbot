@@ -8,11 +8,11 @@ module Phlex
           @io = io
           @remote_ip = env["HTTP_X_FORWARDED_FOR"] || env["REMOTE_ADDR"]
 
-          Chatbot.logger.info "[SSE] Connection opened from #{@remote_ip}"
+          Chatbot.logger.debug "[SSE] Connection opened from #{@remote_ip}"
         end
 
         def close
-          Chatbot.logger.info "[SSE] Connection to #{@remote_ip} closed: #{code} - #{reason}"
+          Chatbot.logger.debug "[SSE] Connection to #{@remote_ip} closed: #{code} - #{reason}"
           @io.close rescue nil # rubocop:disable Style/RescueModifier
         end
 

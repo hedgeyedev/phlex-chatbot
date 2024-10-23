@@ -19,7 +19,7 @@ module Phlex
         end
 
         def on_open
-          Chatbot.logger.info "[WS] Connection opened from #{@remote_ip}"
+          Chatbot.logger.debug "[WS] Connection opened from #{@remote_ip}"
         end
 
         def on_message(message)
@@ -39,7 +39,7 @@ module Phlex
             reason = $ERROR_INFO.message
           end
 
-          Chatbot.logger.info "[WS] Connection to #{@remote_ip} closed: #{code} - #{reason}"
+          Chatbot.logger.debug "[WS] Connection to #{@remote_ip} closed: #{code} - #{reason}"
         end
 
         def on_error(message)
