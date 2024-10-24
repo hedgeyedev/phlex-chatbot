@@ -3,7 +3,6 @@
 module Phlex
   module Chatbot
     module Switchboard
-
       def self.converse(channel_id, message)
         Phlex::Chatbot.switchboard.converse(channel_id, message)
       end

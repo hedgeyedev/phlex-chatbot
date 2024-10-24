@@ -1,17 +1,12 @@
+require:
+  - rubocop-rspec
+
 AllCops:
   DisplayCopNames: true
   Exclude:
     - .*/**/*
-    - vendor/**/*
     - Gemfile
-    - db/schema.rb
   NewCops: enable
-  TargetRubyVersion: 3.2
-
-# For all options see https://github.com/bbatsov/rubocop/tree/master/config
-
-require:
-  - rubocop-rspec
 
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
@@ -56,7 +51,7 @@ Metrics/ModuleLength:
 
 # Avoid methods longer than 87 lines of code
 Metrics/MethodLength:
-  CountComments: false  # count full line comments?
+  CountComments: false # count full line comments?
   Max: 20
   AllowedMethods:
     - view_template
@@ -65,11 +60,6 @@ Metrics/PerceivedComplexity:
   Max: 10
   AllowedMethods:
     - view_template
-
-Style/ArgumentsForwarding:
-  Exclude:
-    - 'app/views/components/*.rb' # unnamed block argument forwarding causes an InfiniteCorrectionLoop error in RuboCop for some components
-  UseAnonymousForwarding: false
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: never
@@ -90,7 +80,10 @@ Style/SingleLineMethods:
   AllowIfMethodIsEmpty: true
 
 Style/StringLiterals:
-  EnforcedStyle: double_quotes
+  Enabled: false
+
+Style/QuotedSymbols:
+  Enabled: false
 
 Style/FrozenStringLiteralComment:
   Enabled: true
@@ -109,7 +102,7 @@ Style/SingleLineBlockParams:
   Enabled: false
 
 Style/SignalException:
-  EnforcedStyle: 'only_raise'
+  EnforcedStyle: "only_raise"
 
 # Allow non-ASCII characters (e.g. £) in comments
 Style/AsciiComments:
@@ -130,13 +123,9 @@ Naming/FileName:
 Lint/UriEscapeUnescape:
   Enabled: false
 
-Lint/TopLevelReturnWithArgument:
-  Exclude:
-    - '**/*.arb'
-
 Lint/MissingSuper:
   Exclude:
-    - 'lib/phlex/**/*.rb'
+    - "lib/phlex/**/*.rb"
 
 # RSpec Cops
 RSpec/AlignLeftLetBrace:

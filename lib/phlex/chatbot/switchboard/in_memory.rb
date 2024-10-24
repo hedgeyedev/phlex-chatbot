@@ -9,14 +9,14 @@ module Phlex
         include Singleton
 
         def initialize
-          @channels ||= Concurrent::Hash.new
+          @channels = Concurrent::Hash.new
         end
 
         def create(channel_id)
           (channels[channel_id] ||= Channel.new(channel_id, Phlex::Chatbot.callback)).channel_id
         end
 
-        def extend_ttl(channel_id)
+        def extend_ttl(_channel_id)
           nil
         end
 

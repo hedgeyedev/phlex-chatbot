@@ -68,7 +68,7 @@ module Phlex
             executor = Concurrent::SingleThreadExecutor.new(auto_terminate: true)
             Concurrent::Promises.future_on(executor, @redis_db) do |redis|
               Phlex::Chatbot.logger.info "Starting up Redis subscriber"
-              @redis_db.subscribe(CHANNEL_NAME) do |on|
+              redis.subscribe(CHANNEL_NAME) do |on|
                 on.message do |_, msg|
                   Phlex::Chatbot.logger.debug "Received msg: #{msg}"
                   decoded_msg = JSON.parse(msg, symbolize_names: true)
