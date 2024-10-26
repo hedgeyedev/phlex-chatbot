@@ -6,6 +6,7 @@ require "rack"
 
 require_relative "chatbot/channel"
 require_relative "chatbot/chat"
+require_relative "chatbot/contextualizer"
 require_relative "chatbot/null_logger"
 require_relative "chatbot/status_component"
 require_relative "chatbot/switchboard/base"
@@ -17,12 +18,25 @@ module Phlex
     class Error < StandardError; end
     ROOT_DIR = Pathname.new(__dir__).join("../..").expand_path
 
-    def self.callback
-      @callback
+    def self.allow_error_messages?
+      @allow_error_messages
     end
 
-    def self.callback=(callback)
-      @callback = callback
+    def self.allow_error_messages!
+      @allow_error_messages = true
+    end
+
+    def self.contextualizer(channel_id:)
+      @contextualizer.create(channel_id)
+    end
+
+    def self.contextualizer=(contextualizer)
+      @contextualizer = contextualizer
+    end
+    self.contextualizer = Phlex::Chatbot::Contextualizer
+
+    def self.disallow_error_messages!
+      @allow_error_messages = false
     end
 
     def self.logger
@@ -36,7 +50,7 @@ module Phlex
     def self.switchboard
       @switchboard ||= "in_memory"
       require_relative "chatbot/switchboard/#{@switchboard}"
-      cls_name = @switchboard.to_s.split('_').map(&:capitalize).join
+      cls_name = @switchboard.to_s.split("_").map(&:capitalize).join
       Switchboard.const_get(cls_name).instance
     end
 

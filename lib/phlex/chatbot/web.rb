@@ -46,8 +46,8 @@ module Phlex
           [200, { "content-type" => "application/javascript" }, [js]]
         when "/bot.js.map"
           [200, { "content-type" => "application/javascript" }, [js_map]]
-        when %r{/join/([a-fA-F0-9]+$)}
-          channel = Switchboard.find(Regexp.last_match(1))
+        when %r{/join/(.+$)}
+          channel = Switchboard.find(URI.decode_uri_component(Regexp.last_match(1)))
           return respond_not_found! unless channel
 
           if @env["HTTP_UPGRADE"]&.starts_with?("websocket")
@@ -67,10 +67,14 @@ module Phlex
 
       def on_post
         case path
-        when %r{/ask/([a-fA-F0-9]+$)}
+        when %r{/ask/(.+$)}
           return respond_not_found! unless valid_origin?
 
-          if Switchboard.converse(Regexp.last_match(1), JSON.parse(@env["rack.input"].read)["message"])
+          conversable = Switchboard.converse(
+            URI.debug_sector_info(Regexp.last_match(1)),
+            JSON.parse(@env["rack.input"].read)["message"],
+          )
+          if conversable
             [200, { "content-type" => "text/plain" }, ["ok"]]
           else
             respond_not_found!

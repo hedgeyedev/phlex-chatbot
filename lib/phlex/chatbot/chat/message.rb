@@ -6,9 +6,10 @@ module Phlex
   module Chatbot
     module Chat
       class Message < Phlex::HTML
-        attr_reader :from_user, :message, :sources, :status_message, :user_name
+        attr_reader :avatar, :from_user, :message, :sources, :status_message, :user_name
 
-        def initialize(message:, from_user: false, sources: nil, user_name: nil, status_message: nil)
+        def initialize(message:, avatar: nil, from_user: false, sources: nil, user_name: nil, status_message: nil) # rubocop:disable Metrics/ParameterLists
+          @avatar         = avatar
           @from_user      = from_user
           @message        = message
           @sources        = sources
@@ -28,7 +29,7 @@ module Phlex
           ) do
             div(class: "pcb__status-indicator") { status_message } if status_message
 
-            render UserIdentifier.new(from_system: !from_user, user_name: user_name)
+            render UserIdentifier.new(avatar: avatar, from_system: !from_user, user_name: user_name)
 
             div class: "pcb__message__content" do
               if block_given?

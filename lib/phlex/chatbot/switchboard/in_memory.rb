@@ -9,7 +9,7 @@ module Phlex
         include Singleton
 
         def initialize
-          @channels ||= Concurrent::Hash.new
+          @channels = Concurrent::Hash.new
         end
 
         def create(channel_id)

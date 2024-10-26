@@ -232,6 +232,7 @@ export default class extends Controller {
   }
 
   url(action) {
-    return `${this.endpointValue}/${action}/${this.conversationTokenValue}`
+    const encodedToken = encodeURIComponent(this.conversationTokenValue);
+    return `${this.endpointValue}/${action}/${encodedToken}`
   }
 }

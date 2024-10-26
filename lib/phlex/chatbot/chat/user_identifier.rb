@@ -6,7 +6,8 @@ module Phlex
       class UserIdentifier < Phlex::HTML
         AI_ASST = "AI Assistant"
 
-        def initialize(user_name: nil, from_system: false)
+        def initialize(avatar: nil, user_name: nil, from_system: false)
+          @avatar        = avatar
           @from_system   = from_system
           @user_name     = user_name || (from_system ? AI_ASST : "Visitor")
           @user_nickname = @user_name == AI_ASST ? "AI" : @user_name.split.map(&:chr).join.upcase
@@ -14,9 +15,14 @@ module Phlex
 
         def view_template
           div class: "pcb__user-identifier" do
-            div(**classes("pcb__user-identifier-avatar", from_system?: "pcb__user-identifier-avatar__bot",
-from_user?: "pcb__user-identifier-avatar__user")) do
-              @user_nickname
+            div(
+              **classes(
+                "pcb__user-identifier-avatar",
+                from_system?: "pcb__user-identifier-avatar__bot",
+                from_user?: "pcb__user-identifier-avatar__user",
+              ),
+            ) do
+              @avatar || @user_nickname
             end
             span(class: "pcb__user-identifier-name") { @user_name }
           end

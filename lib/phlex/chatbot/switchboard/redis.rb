@@ -22,9 +22,13 @@ module Phlex
           @subscriber = RedisSubscriber.spawn(name: :redis_subscriber)
         end
 
-        def create(id)
-          extend_ttl(id) || @redis_db.setex(id, TEN_MINUTES, true)
-          (channels[id] ||= ChannelWrapper.new(id, Phlex::Chatbot.callback, @subscriber)).channel_id
+        def create(channel_id)
+          extend_ttl(channel_id) || @redis_db.setex(channel_id, TEN_MINUTES, true)
+          (channels[channel_id] ||= ChannelWrapper.new(
+            channel_id,
+            Phlex::Chatbot.contextualizer(channel_id: channel_id),
+            @subscriber,
+          )).channel_id
         end
 
         def extend_ttl(channel_id)
@@ -37,7 +41,11 @@ module Phlex
             return
           end
 
-          channels[channel_id] ||= ChannelWrapper.new(channel_id, Phlex::Chatbot.callback, @subscriber)
+          channels[channel_id] ||= ChannelWrapper.new(
+            channel_id,
+            Phlex::Chatbot.contextualizer(channel_id: channel_id),
+            @subscriber,
+          )
         end
 
         class ChannelWrapper < Channel
