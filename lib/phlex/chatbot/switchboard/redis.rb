@@ -24,11 +24,7 @@ module Phlex
 
         def create(channel_id)
           extend_ttl(channel_id) || @redis_db.setex(channel_id, TEN_MINUTES, true)
-          (channels[channel_id] ||= ChannelWrapper.new(
-            channel_id,
-            Phlex::Chatbot.contextualizer(channel_id: channel_id),
-            @subscriber,
-          )).channel_id
+          (channels[channel_id] ||= ChannelWrapper.new(channel_id, @subscriber)).channel_id
         end
 
         def extend_ttl(channel_id)
@@ -41,16 +37,12 @@ module Phlex
             return
           end
 
-          channels[channel_id] ||= ChannelWrapper.new(
-            channel_id,
-            Phlex::Chatbot.contextualizer(channel_id: channel_id),
-            @subscriber,
-          )
+          channels[channel_id] ||= ChannelWrapper.new(channel_id, @subscriber)
         end
 
         class ChannelWrapper < Channel
-          def initialize(channel_id, callback, subscriber)
-            super(channel_id, callback)
+          def initialize(channel_id, subscriber)
+            super(channel_id)
 
             @redis_subscriber = subscriber
           end

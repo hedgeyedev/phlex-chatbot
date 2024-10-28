@@ -6,16 +6,16 @@ require_relative "client/web_socket"
 module Phlex
   module Chatbot
     class Channel
-      attr_reader :contextualizer, :clients, :channel_id
+      attr_reader :conversator, :clients, :channel_id
 
-      def initialize(channel_id, contextualizer)
-        @contextualizer = contextualizer
-        @channel_id   = channel_id
-        @clients      = Concurrent::Set.new
+      def initialize(channel_id)
+        @conversator = Phlex::Chatbot.conversator(channel_id: channel_id)
+        @channel_id  = channel_id
+        @clients     = Concurrent::Set.new
       end
 
       def send_ack!(message:)
-        args = contextualizer.contextualize(message: message, from_user: true)
+        args = conversator.contextualize(message: message, from_user: true)
         send_event(:resp, data: [{ cmd: "append", element: Chat::Message.new(**args).call }])
       end
 
@@ -28,7 +28,7 @@ module Phlex
                   else
                     "An error occurred"
                   end
-        args = contextualizer.contextualize(message: message, from_user: false)
+        args = conversator.contextualize(message: message, from_user: false)
         send_event(
           :resp,
           data: [
@@ -39,7 +39,7 @@ module Phlex
       end
 
       def send_response!(message:, sources: nil)
-        args = contextualizer.contextualize(message: message, from_user: false, sources: sources)
+        args = conversator.contextualize(message: message, from_user: false, sources: sources)
         send_event(
           :resp,
           data: [
@@ -50,7 +50,7 @@ module Phlex
       end
 
       def send_status!(message:)
-        args = contextualizer.contextualize(message: message, from_user: false)
+        args = conversator.contextualize(message: message, from_user: false)
         send_event(
           :resp,
           data: [
@@ -61,7 +61,7 @@ module Phlex
       end
 
       def start_conversation!(data)
-        contextualizer.call(self, data, channel_id)
+        conversator.call(self, data, channel_id)
       rescue StandardError => e
         send_failure!(e)
       end

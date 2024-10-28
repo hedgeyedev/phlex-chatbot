@@ -29,7 +29,7 @@ mount Phlex::Chatbot::Web, at: "/phlex-chatbot"
 Create an initializer `config/initializers/phlex_chatbot.rb` to set your logger:
 ```ruby
 Phlex::Chatbot.logger = Rails.logger
-Phlex::Chatbot.contextualizer = ... <a subclass of Phlex::Chatbot::Contextualizer, see below>
+Phlex::Chatbot.conversator = ... <a subclass of Phlex::Chatbot::Conversator, see below>
 Phlex::Chatbot.disallow_error_messages! # if you don't want Ruby error messages shown in the bot UI (default)
 Phlex::Chatbot.allow_error_messages! # if you want Ruby error messages shown in the bot UI
 ```
@@ -83,15 +83,15 @@ Your application is responsible for determining how to respond to that new messa
 sends the chatbot a status message, processes the incoming message using `langchainrb` and `ruby-openai`, and
 finally sends a final response.
 
-Your application is responsible for setting the `Phlex::Chatbot.contextualizer` which is a subclass of
-`Phlex::Chatbot::Contextualizer`. At a minimum, you should implement `#call(bot, incoming_message, bot_id)`.
+Your application is responsible for setting the `Phlex::Chatbot.conversator` which is a subclass of
+`Phlex::Chatbot::Conversator`. At a minimum, you should implement `#call(bot, incoming_message, bot_id)`.
 You can also implement the `#contextualize` message that is responsible for adding more context to the mesasge
 that gets sent to the bot's UI. Specifically, it should add the `user_name` and `avatar` keys to the message
 hash (as symbols) based on whether the message is from the bot or the person with whom the bot is conversing.
 The base implementation adds some basic defaults.
 
 ```ruby
-Phlex::Chatbot.contextualizer = Class.new(Phlex::Chatbot::Contextualizer) do
+Phlex::Chatbot.conversator = Class.new(Phlex::Chatbot::Conversator) do
   def call(bot, incoming_message, bot_id)
     bot.send_status!(message: "I got your message, just a sec...")
 
@@ -108,7 +108,7 @@ This example uses a custom class and the excellent [Sequel](https://sequel.jerem
 full text search for the top 10 results matching the incoming message.
 
 ```ruby
-class FullTextSearch < Phlex::Chatbot::Contextualizer
+class FullTextSearch < Phlex::Chatbot::Conversator
   SYSTEM_NAME = 'My Bot'
 
   def call(bot, incoming_message, bot_id)

@@ -2,7 +2,7 @@
 
 module Phlex
   module Chatbot
-    class Contextualizer
+    class Conversator
       attr_reader :system_avatar, :system_name, :user_avatar, :user_name
 
       def self.create(_channel_id)

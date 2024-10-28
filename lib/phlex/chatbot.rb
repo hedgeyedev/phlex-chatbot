@@ -6,7 +6,7 @@ require "rack"
 
 require_relative "chatbot/channel"
 require_relative "chatbot/chat"
-require_relative "chatbot/contextualizer"
+require_relative "chatbot/conversator"
 require_relative "chatbot/null_logger"
 require_relative "chatbot/status_component"
 require_relative "chatbot/switchboard/base"
@@ -26,14 +26,14 @@ module Phlex
       @allow_error_messages = true
     end
 
-    def self.contextualizer(channel_id:)
-      @contextualizer.create(channel_id)
+    def self.conversator(channel_id:)
+      @conversator.create(channel_id)
     end
 
-    def self.contextualizer=(contextualizer)
-      @contextualizer = contextualizer
+    def self.conversator=(conversator)
+      @conversator = conversator
     end
-    self.contextualizer = Phlex::Chatbot::Contextualizer
+    self.conversator = Phlex::Chatbot::Conversator
 
     def self.disallow_error_messages!
       @allow_error_messages = false
