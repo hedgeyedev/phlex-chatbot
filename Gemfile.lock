@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    phlex-chatbot (0.1.16)
+    phlex-chatbot (0.2.0)
       actioncable (~> 7.1)
       concurrent-ruby (~> 1.3)
       concurrent-ruby-edge (~> 0.7.1)
