@@ -8,7 +8,7 @@ module Phlex
       end
 
       def self.create(id)
-        Phlex::Chatbot.switchboard.create(Digest::SHA256.hexdigest(id))
+        Phlex::Chatbot.switchboard.create(id.to_s)
       end
 
       def self.destroy(channel_id)

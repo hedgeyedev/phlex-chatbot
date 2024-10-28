@@ -29,6 +29,9 @@ mount Phlex::Chatbot::Web, at: "/phlex-chatbot"
 Create an initializer `config/initializers/phlex_chatbot.rb` to set your logger:
 ```ruby
 Phlex::Chatbot.logger = Rails.logger
+Phlex::Chatbot.conversator = ... <a subclass of Phlex::Chatbot::Conversator, see below>
+Phlex::Chatbot.disallow_error_messages! # if you don't want Ruby error messages shown in the bot UI (default)
+Phlex::Chatbot.allow_error_messages! # if you want Ruby error messages shown in the bot UI
 ```
 
 In other Rack applications, you might do something like the following or consult your framework's
@@ -68,7 +71,7 @@ The chat components receive the same set of arguments:
 To allow your users to have a conversation with the chatbot, your app will need to get a token:
 
 ```ruby
-token = Phlex::Chatbot::Switchboard.create(user.email_address, callback)
+token = Phlex::Chatbot::Switchboard.create(user.email_address)
 ```
 
 Here we are passing the email address of a `User` in the system as the application's identifier for this
@@ -76,32 +79,39 @@ conversation. The chatbot will encrypt and store that identifier and return the 
 your application can use that token to interact with the chatbot: send it messages or status information,
 and eventually terminate the conversation.
 
-The callback you give to the conversation is anything that responds to `#call` (e.g. a proc, a method object,
-or a custom object that implements the `#call` message). `#call` takes two parameters, the chatbot instance
-and the incoming message `String`. Your application is responsible for determining how to respond to that new
-message. Here is an example that sends the chatbot a status message, processes the incoming message using
-`langchainrb` and `ruby-openai`, and finally sends a final response.
+Your application is responsible for determining how to respond to that new message. Here is an example that
+sends the chatbot a status message, processes the incoming message using `langchainrb` and `ruby-openai`, and
+finally sends a final response.
+
+Your application is responsible for setting the `Phlex::Chatbot.conversator` which is a subclass of
+`Phlex::Chatbot::Conversator`. At a minimum, you should implement `#call(bot, incoming_message, bot_id)`.
+You can also implement the `#contextualize` message that is responsible for adding more context to the mesasge
+that gets sent to the bot's UI. Specifically, it should add the `user_name` and `avatar` keys to the message
+hash (as symbols) based on whether the message is from the bot or the person with whom the bot is conversing.
+The base implementation adds some basic defaults.
 
 ```ruby
-Phlex::Chatbot::Switchboard.create(
-  user.email,
-  lambda do |bot, incoming_message|
+Phlex::Chatbot.conversator = Class.new(Phlex::Chatbot::Conversator) do
+  def call(bot, incoming_message, bot_id)
     bot.send_status!(message: "I got your message, just a sec...")
 
     llm  = Langchain::LLM::OpenAI.new(api_key: ENV["OPENAI_API_KEY"])
     chat = llm.chat(messages: [{ role: user.type, content: incoming_message }])
 
     bot.send_response!(message: chat.chat_completion)
-  end,
-)
+  end
+end
+Phlex::Chatbot::Switchboard.create(user.email)
 ```
 
 This example uses a custom class and the excellent [Sequel](https://sequel.jeremyevans.net/) library to do a
 full text search for the top 10 results matching the incoming message.
 
 ```ruby
-class FullTextSearch
-  def self.call(bot, incoming_message)
+class FullTextSearch < Phlex::Chatbot::Conversator
+  SYSTEM_NAME = 'My Bot'
+
+  def call(bot, incoming_message, bot_id)
     bot.send_status!(message: "Compiling results...")
 
     terms = parse_terms(incoming_message)
@@ -113,6 +123,11 @@ class FullTextSearch
     end
   end
 
+  def contextualize(hash)
+    hash.merge!(user_name: SYSTEM_NAME) unless hash[:from_user]
+    hash
+  end
+
   def self.parse_terms(incoming_message)
     CSV.parse_line(incoming_message).compact.map(&:strip)
   rescue
@@ -120,7 +135,7 @@ class FullTextSearch
   end
 end
 
-Phlex::Chatbot::Switchboard.create(user.email, FullTextSearch)
+Phlex::Chatbot::Switchboard.create(user.email)
 ```
 
 You can converse with your chatbot in three ways:
@@ -128,6 +143,22 @@ You can converse with your chatbot in three ways:
 1. `#send_response!` - sends a final message that replace's the bot's temporary response
 1. `#send_failure!` - similar to `#send_response!` this will replace the bot's temporary response but allows
    the UI to style the response differently, indicating to the user that something unexpected has occured
+
+### Channel#send_status!
+This message receives a `String` which is broadcast to all chat subscribers. The chatbot will change the title
+of the bot response placeholder with this message. It is expected that the "backend" will either broadcast
+a final response or a failure at some point after this.
+
+### Channel#send_response!
+This message receives `message: String` and `sources: Array<String>`.
+  - `message: String` - the message you want to broadcast to all chat subscribers. Sources can be link with the
+    pattern `[1]`, `[2]`, `[3]`, etc. These text patterns will be replaced with the corresponding source from
+    the `sources` argument, if supplied. The links are one-based, not zero-based.
+  - `sources: Array<String>` - links to source data in the `message`
+
+### Channel#send_failure!
+This message receives an Exception object. Its `message` is broadcast to all chat subscribers. This will cause
+the chatbot placeholder to be finalized with this message. No other response is needed after this point.
 
 ## Development
 

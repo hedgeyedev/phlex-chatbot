@@ -6,51 +6,62 @@ require_relative "client/web_socket"
 module Phlex
   module Chatbot
     class Channel
-      attr_reader :callback, :clients, :channel_id
+      attr_reader :conversator, :clients, :channel_id
 
-      def initialize(channel_id, callback)
-        @callback   = callback
-        @channel_id = channel_id
-        @clients    = Concurrent::Set.new
+      def initialize(channel_id)
+        @conversator = Phlex::Chatbot.conversator(channel_id: channel_id)
+        @channel_id  = channel_id
+        @clients     = Concurrent::Set.new
       end
 
       def send_ack!(message:)
-        send_event(:resp, data: [{ cmd: "append", element: Chat::Message.new(message: message, from_user: true).call }])
+        args = conversator.contextualize(message: message, from_user: true)
+        send_event(:resp, data: [{ cmd: "append", element: Chat::Message.new(**args).call }])
       end
 
       def send_failure!(error)
         Chatbot.logger.error error
+        message = if error.respond_to?(:message) && Phlex::Chatbot.allow_error_messages?
+                    error.message
+                  elsif error.is_a?(String)
+                    error
+                  else
+                    "An error occurred"
+                  end
+        args = conversator.contextualize(message: message, from_user: false)
         send_event(
           :resp,
           data: [
             { cmd: "delete", selector: "#current_status" },
-            { cmd: "append", element: Chat::Message.new(message: error.message).call },
+            { cmd: "append", element: Chat::Message.new(**args).call },
           ],
         )
       end
 
       def send_response!(message:, sources: nil)
+        args = conversator.contextualize(message: message, from_user: false, sources: sources)
         send_event(
           :resp,
           data: [
             { cmd: "delete", selector: "#current_status" },
-            { cmd: "append", element: Chat::Message.new(message: message, sources: sources).call },
+            { cmd: "append", element: Chat::Message.new(**args).call },
           ],
         )
       end
 
       def send_status!(message:)
+        args = conversator.contextualize(message: message, from_user: false)
         send_event(
           :resp,
           data: [
             { cmd: "delete", selector: "#current_status" },
-            { cmd: "append", element: ChatbotThinking.new(message).call },
+            { cmd: "append", element: ChatbotThinking.new(**args).call },
           ],
         )
       end
 
       def start_conversation!(data)
-        callback.call(self, data)
+        conversator.call(self, data, channel_id)
       rescue StandardError => e
         send_failure!(e)
       end
