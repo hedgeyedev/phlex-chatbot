@@ -50,12 +50,11 @@ module Phlex
       end
 
       def send_status!(message:)
-        args = conversator.contextualize(message: message, from_user: false)
         send_event(
           :resp,
           data: [
             { cmd: "delete", selector: "#current_status" },
-            { cmd: "append", element: ChatbotThinking.new(**args).call },
+            { cmd: "append", element: ChatbotThinking.new(message).call },
           ],
         )
       end
