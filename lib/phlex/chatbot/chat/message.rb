@@ -35,7 +35,7 @@ module Phlex
               if block_given?
                 yield
               else
-                plain message
+                unsafe_raw message
               end
             end
 
