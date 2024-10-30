@@ -38,13 +38,29 @@ module Phlex
         )
       end
 
-      def send_response!(message:, sources: nil)
-        args = conversator.contextualize(message: message, from_user: false, sources: sources)
+      def send_partial_response!(message:, status_message:, format: nil)
+        args = conversator.contextualize(
+          message: message,
+          from_user: false,
+          status_message: status_message,
+          format: format,
+        )
         send_event(
           :resp,
           data: [
             { cmd: "delete", selector: "#current_status" },
-            { cmd: "append", element: Chat::Message.new(**args).call },
+            { cmd: "append", element: Chat::Message.new(**args.except(:format)).call },
+          ],
+        )
+      end
+
+      def send_response!(message:, sources: nil, format: nil)
+        args = conversator.contextualize(message: message, format: format, from_user: false, sources: sources)
+        send_event(
+          :resp,
+          data: [
+            { cmd: "delete", selector: "#current_status" },
+            { cmd: "append", element: Chat::Message.new(**args.except(:format)).call },
           ],
         )
       end
