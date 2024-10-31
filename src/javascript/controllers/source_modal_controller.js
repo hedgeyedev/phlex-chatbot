@@ -14,8 +14,8 @@ export default class extends Controller {
   showModal(event) {
     const { title, description, url } = event.detail
 
-    this.modalTarget.querySelector('.pcb__source-modal-title').innerText = title
-    this.modalTarget.querySelector('.pcb__source-modal-description').innerText = description
+    this.setTextOrHtml(this.modalTarget.querySelector('.pcb__source-modal-title'), title);
+    this.setTextOrHtml(this.modalTarget.querySelector('.pcb__source-modal-description'), description);
     this.modalTarget.querySelector('.pcb__source-modal-link').href = url
     this.modalTarget.classList.remove('hide-modal')
   }
@@ -25,5 +25,13 @@ export default class extends Controller {
     this.modalTarget.querySelector('.pcb__source-modal-description').innerText = ""
     this.modalTarget.querySelector('.pcb__source-modal-link').href = ""
     this.modalTarget.classList.add('hide-modal')
+  }
+
+  setTextOrHtml(element, text) {
+    if (text.includes('<')) {
+      element.innerHTML = text
+    } else {
+      element.innerText = text
+    }
   }
 }

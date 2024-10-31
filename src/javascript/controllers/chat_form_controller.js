@@ -115,7 +115,6 @@ export default class extends Controller {
   }
 
   registerEventListeners() {
-
     const disconnectCallback = (e) => {
       console.debug(e);
       this.reconnect();
@@ -124,7 +123,7 @@ export default class extends Controller {
           this.disableInput();
           this.messagesContainerTarget.classList.add('pcb__connection-error');
         }
-      }, 0);
+      }, 100);
     };
 
     document.addEventListener("phlex-chatbot:close", disconnectCallback);

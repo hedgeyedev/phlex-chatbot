@@ -186,7 +186,8 @@ button[data-sidebar-target="toggleButton"] {
 }
 
 .pcb__source-modal-content {
-  @apply bg-white dark:bg-gray-800 text-gray-800 dark:text-white p-6 rounded-lg max-w-2xl w-full;
+  @apply bg-white dark:bg-gray-800 text-gray-800 dark:text-white p-6 rounded-lg;
+  @apply max-w-2xl w-full max-h-[80%];
   @apply shadow-xl;
 }
 
