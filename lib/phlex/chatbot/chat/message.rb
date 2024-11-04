@@ -8,13 +8,22 @@ module Phlex
       class Message < Phlex::HTML
         attr_reader :avatar, :from_user, :message, :sources, :status_message, :user_name
 
-        def initialize(message:, avatar: nil, from_user: false, sources: nil, user_name: nil, status_message: nil) # rubocop:disable Metrics/ParameterLists
-          @avatar         = avatar
-          @from_user      = from_user
-          @message        = message
-          @sources        = sources
-          @user_name      = user_name
-          @status_message = status_message
+        def initialize( # rubocop:disable Metrics/ParameterLists
+          message:,
+          additional_message_actions: nil,
+          avatar: nil,
+          from_user: false,
+          sources: nil,
+          status_message: nil,
+          user_name: nil
+        )
+          @additional_message_actions = additional_message_actions
+          @avatar                     = avatar
+          @from_user                  = from_user
+          @message                    = message
+          @sources                    = sources
+          @status_message             = status_message
+          @user_name                  = user_name
         end
 
         def view_template
@@ -68,6 +77,9 @@ module Phlex
           div class: "pcb__message__actions" do
             button(data: { action: "click->pcb-chat-messages#copyMessage" }) { "Copy" }
             button(data: { action: "click->pcb-chat-messages#regenerateResponse" }) { "Regenerate" }
+            @additional_message_actions&.each do |component_callback|
+              render component_callback.call(self)
+            end
           end
         end
       end

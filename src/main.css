@@ -126,7 +126,7 @@ button[data-sidebar-target="toggleButton"] {
 .pcb__message__actions {
   @apply mt-2 flex space-x-2;
 
-  button {
+  a, button {
     @apply text-xs text-gray-500 hover:text-gray-700;
     @apply dark:text-gray-400 dark:hover:text-gray-200;
   }
@@ -351,6 +351,7 @@ button[data-sidebar-target="toggleButton"] {
   @apply mt-2 flex space-x-2;
 }
 
-.pcb__chat-container.full-page .pcb__message__actions button {
+.pcb__chat-container.full-page .pcb__message__actions button,
+.pcb__chat-container.full-page .pcb__message__actions a, {
   @apply text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200;
 }

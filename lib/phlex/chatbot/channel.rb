@@ -19,7 +19,7 @@ module Phlex
         send_event(:resp, data: [{ cmd: "append", element: Chat::Message.new(**args).call }])
       end
 
-      def send_failure!(error)
+      def send_failure!(error, uid: nil)
         Chatbot.logger.error error
         message = if error.respond_to?(:message) && Phlex::Chatbot.allow_error_messages?
                     error.message
@@ -28,7 +28,7 @@ module Phlex
                   else
                     "An error occurred"
                   end
-        args = conversator.contextualize(message: message, from_user: false)
+        args = conversator.contextualize(message: message, from_user: false, uid: uid)
         send_event(
           :resp,
           data: [
@@ -38,12 +38,13 @@ module Phlex
         )
       end
 
-      def send_partial_response!(message:, status_message:, format: nil)
+      def send_partial_response!(message:, status_message:, format: nil, uid: nil)
         args = conversator.contextualize(
           message: message,
           from_user: false,
           status_message: status_message,
           format: format,
+          uid: uid,
         )
         send_event(
           :resp,
@@ -54,8 +55,8 @@ module Phlex
         )
       end
 
-      def send_response!(message:, sources: nil, format: nil)
-        args = conversator.contextualize(message: message, format: format, from_user: false, sources: sources)
+      def send_response!(message:, sources: nil, format: nil, uid: nil)
+        args = conversator.contextualize(message: message, format: format, from_user: false, sources: sources, uid: uid)
         send_event(
           :resp,
           data: [
