@@ -11,6 +11,7 @@ export default class extends Controller {
   }
 
   connect() {
+    console.debug("stimulus connect")
     this.reconnectAttempts = 0;
 
     console.debug("ChatFormController connected")
@@ -26,6 +27,17 @@ export default class extends Controller {
     this.setup();
     this.resetTextarea()
     this.scrollToBottom()
+  }
+
+  disconnect() {
+    console.debug("stimulus disconnect");
+    this.unregisterEventListeners();
+
+    if (this.driverValue === "sse") {
+      this.teardownSseConversation();
+    } else {
+      this.teardownWebSocketConversation();
+    }
   }
 
   alterUI(commands) {
@@ -115,7 +127,7 @@ export default class extends Controller {
   }
 
   registerEventListeners() {
-    const disconnectCallback = (e) => {
+    this.disconnectCallback = (e) => {
       console.debug(e);
       this.reconnect();
       setTimeout(() => {
@@ -126,20 +138,22 @@ export default class extends Controller {
       }, 100);
     };
 
-    document.addEventListener("phlex-chatbot:close", disconnectCallback);
-    document.addEventListener("phlex-chatbot:error", disconnectCallback);
-
-    document.addEventListener("phlex-chatbot:open", (e) => {
+    this.openCallback = (e) => {
       console.debug(e);
       this.reconnectAttempts = 0;
       this.enableInput();
       this.messagesContainerTarget.classList.remove('pcb__connection-error');
-    });
+    }
 
-    document.addEventListener("phlex-chatbot:resp", event => {
+    this.responseCallback = (e) => {
       console.debug("Received resp:", event.detail);
       this.alterUI(event.detail.commands);
-    });
+    }
+
+    document.addEventListener("phlex-chatbot:close", this.disconnectCallback);
+    document.addEventListener("phlex-chatbot:error", this.disconnectCallback);
+    document.addEventListener("phlex-chatbot:open", this.openCallback);
+    document.addEventListener("phlex-chatbot:resp", this.responseCallback);
   }
 
   resetTextarea() {
@@ -192,6 +206,7 @@ export default class extends Controller {
           return;
         }
 
+        console.debug("sending ping");
         this.conversation.send("ping");
       }, this.pingMsValue);
     }
@@ -228,6 +243,33 @@ export default class extends Controller {
         }
       });
     }
+  }
+
+  teardownSseConversation() {
+    if (this.conversation) {
+      console.debug("tearing down SSE conversation");
+      this.conversation.close();
+    }
+  }
+
+  teardownWebSocketConversation() {
+    if (this.conversation) {
+      console.debug("tearing down websocket conversation");
+      this.conversation.onclose = () => { console.debug("websocket closed") };
+      this.conversation.close();
+      if (this.pingTask) {
+        console.debug("shutting down websocket keep-alive pinger");
+        clearInterval(this.pingTask);
+      }
+    }
+  }
+
+  unregisterEventListeners() {
+    document.removeEventListener("phlex-chatbot:close", this.disconnectCallback);
+    document.removeEventListener("phlex-chatbot:error", this.disconnectCallback);
+    document.removeEventListener("phlex-chatbot:open", this.openCallback);
+    document.removeEventListener("phlex-chatbot:resp", this.responseCallback);
+    console.debug("unregistered event listeners");
   }
 
   url(action) {
