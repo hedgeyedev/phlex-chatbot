@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "action_cable"
 require "phlex/chatbot"
 
 # RSpec.configure do |config|
