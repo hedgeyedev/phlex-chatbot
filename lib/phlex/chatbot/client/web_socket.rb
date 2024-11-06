@@ -7,7 +7,7 @@ module Phlex
   module Chatbot
     module Client
       class WebSocket
-        EVENT_LOOP = ActionCable::Connection::StreamEventLoop.new
+        EVENT_LOOP = ::ActionCable::Connection::StreamEventLoop.new
 
         def initialize(env, token)
           @remote_ip = env["HTTP_X_FORWARDED_FOR"] || env["REMOTE_ADDR"]
