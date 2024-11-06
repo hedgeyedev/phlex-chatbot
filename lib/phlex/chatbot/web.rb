@@ -71,7 +71,7 @@ module Phlex
           return respond_not_found! unless valid_origin?
 
           conversable = Switchboard.converse(
-            URI.debug_sector_info(Regexp.last_match(1)),
+            URI.decode_www_form_component(Regexp.last_match(1)),
             JSON.parse(@env["rack.input"].read)["message"],
           )
           if conversable

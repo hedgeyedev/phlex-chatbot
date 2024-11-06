@@ -67,19 +67,19 @@ module Phlex
             @redis_db = Switchboard::Redis.new_redis_connection
             executor = Concurrent::SingleThreadExecutor.new(auto_terminate: true)
             Concurrent::Promises.future_on(executor, @redis_db) do |redis|
-              Phlex::Chatbot.logger.info "Starting up Redis subscriber"
+              Phlex::Chatbot.logger.info "[Redis] Starting up subscriber"
               redis.subscribe(CHANNEL_NAME) do |on|
                 on.message do |_, msg|
-                  Phlex::Chatbot.logger.debug "Received msg: #{msg}"
+                  Phlex::Chatbot.logger.debug "[Redis] Received msg: #{msg}"
                   decoded_msg = JSON.parse(msg, symbolize_names: true)
                   channel_id  = decoded_msg[:channel_id]
                   channel     = Switchboard::Redis.instance.find(channel_id)
 
-                  Phlex::Chatbot.logger.warn("Channel not found: #{channel_id}") unless channel
+                  Phlex::Chatbot.logger.warn("[Redis] Channel not found: #{channel_id}") unless channel
                   channel&.broadcast_event(decoded_msg[:event], data: decoded_msg[:data])
                 end
               end
-              Phlex::Chatbot.logger.info "Shutting down Redis subscriber"
+              Phlex::Chatbot.logger.info "[Redis] Shutting down subscriber"
             end
           end
 
