@@ -31,7 +31,6 @@ module Phlex
           return false unless the_channel
 
           the_channel.send_ack!(message: message)
-          the_channel.send_status!(message: "Asking the oracle")
 
           future = Concurrent::Promises.future_on(:io, the_channel, message) do |channel, data|
             channel.start_conversation!(data)

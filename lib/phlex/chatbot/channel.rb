@@ -50,7 +50,7 @@ module Phlex
           :resp,
           data: [
             { cmd: "delete", selector: "#current_status" },
-            { cmd: "append", element: Chat::Message.new(**args.except(:format)).call },
+            { cmd: "append", element: Chat::Message.new(**args).call },
           ],
         )
       end
@@ -61,7 +61,7 @@ module Phlex
           :resp,
           data: [
             { cmd: "delete", selector: "#current_status" },
-            { cmd: "append", element: Chat::Message.new(**args.except(:format)).call },
+            { cmd: "append", element: Chat::Message.new(**args).call },
           ],
         )
       end

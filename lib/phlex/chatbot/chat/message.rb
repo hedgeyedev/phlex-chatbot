@@ -15,7 +15,8 @@ module Phlex
           from_user: false,
           sources: nil,
           status_message: nil,
-          user_name: nil
+          user_name: nil,
+          **_others
         )
           @additional_message_actions = additional_message_actions
           @avatar                     = avatar
