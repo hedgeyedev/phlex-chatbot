@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = ["message", "typingIndicator", "sourceModal", "messagesContainer"]
 
   connect() {
-    console.log("ChatMessagesController connected")
+    console.debug("ChatMessagesController connected")
     this.observeMessageAddition()
   }
 
@@ -25,7 +25,7 @@ export default class extends Controller {
   }
 
   animateMessage(message) {
-    console.log("Animating new message")
+    console.debug("Animating new message")
     if (message.classList.contains('pcb__message__user')) {
       message.classList.add('slide-in')
       setTimeout(() => {
@@ -63,6 +63,9 @@ export default class extends Controller {
   copyMessage(event) {
     const messageElement = event.target.closest('.pcb__message')
     const messageContent = messageElement.querySelector('.pcb__message__content').textContent
+    const footnotes = Array.from(messageElement.querySelectorAll('.pcb__message__footnotes > a'))
+      .map((a, i) => `(${i+1}) ${a.dataset.pcbChatMessagesSourceTitleParam} - ${a.dataset.pcbChatMessagesSourceUrlParam}`)
+      .join("\n")
 
     const copyToClipboard = (text) => {
       if (navigator.clipboard && window.isSecureContext) {
@@ -85,7 +88,7 @@ export default class extends Controller {
       }
     }
 
-    copyToClipboard(messageContent)
+    copyToClipboard(`${messageContent}\n\nSources:\n${footnotes}`)
       .then(() => {
         const originalText = event.target.textContent
         event.target.textContent = "Copied!"
