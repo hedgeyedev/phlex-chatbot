@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "source"
 require_relative "user_identifier"
 
 module Phlex
@@ -45,7 +46,7 @@ module Phlex
               if block_given?
                 yield
               else
-                unsafe_raw message
+                unsafe_raw message_with_embedded_sources
               end
             end
 
@@ -57,19 +58,20 @@ module Phlex
 
         private
 
+        def message_with_embedded_sources
+          @message.gsub(/\[(\d+)\]/) do |ref|
+            index = ref.scan(/\d+/).first&.to_i
+            source = sources[index - 1] rescue nil
+            next ref.to_s unless source
+
+            Source.new(index: index, source: source, classes: "pcb__footnote !mr-0").call
+          end
+        end
+
         def render_sources
           div class: "pcb__message__footnotes" do
             sources.each.with_index(1) do |source, index|
-              a(
-                href: "#",
-                class: "pcb__footnote",
-                data: {
-                  action: "click->pcb-chat-messages#showSource:prevent",
-                  pcb_chat_messages_source_title_param: source[:title],
-                  pcb_chat_messages_source_description_param: source[:description],
-                  pcb_chat_messages_source_url_param: source[:url],
-                },
-              ) { "[#{index}]" }
+              render Source.new(index: index, source: source)
             end
           end
         end
