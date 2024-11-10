@@ -12,6 +12,7 @@ module Phlex
 
         def view_template
           div(
+            id: "pcb-chat-messages",
             class: "pcb__chat-messages",
             data: {
               pcb_chat_form_target: "messagesContainer",

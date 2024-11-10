@@ -17,6 +17,7 @@ module Phlex
           sources: nil,
           status_message: nil,
           user_name: nil,
+          current_status: nil,
           **_others
         )
           @additional_message_actions = additional_message_actions
@@ -26,6 +27,7 @@ module Phlex
           @sources                    = sources
           @status_message             = status_message
           @user_name                  = user_name
+          @current_status             = current_status || !!status_message
         end
 
         def view_template
@@ -34,15 +36,18 @@ module Phlex
           message_class += " pcb__message__bot-loading" if status_message
 
           div(
-            id: status_message ? "current_status" : nil,
+            id: @current_status ? "current_status" : nil,
             class: "pcb__message #{message_class}",
             data_chat_messages_target: user_target_data,
+            data_chatbot_target: "message",
+            data_controller: "chatbot-message",
+            data_chatbot_message_type_value: from_user ? "user" : "bot",
           ) do
             div(class: "pcb__status-indicator") { status_message } if status_message
 
             render UserIdentifier.new(avatar: avatar, from_system: !from_user, user_name: user_name)
 
-            div class: "pcb__message__content" do
+            div class: "pcb__message__content", data_chatbot_message_target: "content" do
               if block_given?
                 yield
               else
@@ -69,7 +74,7 @@ module Phlex
         end
 
         def render_sources
-          div class: "pcb__message__footnotes" do
+          div class: "pcb__message__footnotes", data_chatbot_message_target: "sources" do
             sources.each.with_index(1) do |source, index|
               render Source.new(index: index, source: source)
             end
@@ -78,7 +83,7 @@ module Phlex
 
         def render_actions
           div class: "pcb__message__actions" do
-            button(data: { action: "click->pcb-chat-messages#copyMessage" }) { "Copy" }
+            button(data_chatbot_message_target: "copyButton") { "Copy" }
             button(data: { action: "click->pcb-chat-messages#regenerateResponse" }) { "Regenerate" }
             @additional_message_actions&.each do |component_callback|
               render component_callback.call(self)
