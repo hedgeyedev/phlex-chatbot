@@ -38,7 +38,6 @@ module Phlex
           div(
             id: @current_status ? "current_status" : nil,
             class: "pcb__message #{message_class}",
-            data_chat_messages_target: user_target_data,
             data_chatbot_target: "message",
             data_controller: "chatbot-message",
             data_chatbot_message_type_value: from_user ? "user" : "bot",
@@ -84,7 +83,7 @@ module Phlex
         def render_actions
           div class: "pcb__message__actions" do
             button(data_chatbot_message_target: "copyButton") { "Copy" }
-            button(data: { action: "click->pcb-chat-messages#regenerateResponse" }) { "Regenerate" }
+            button { "Regenerate" }
             @additional_message_actions&.each do |component_callback|
               render component_callback.call(self)
             end

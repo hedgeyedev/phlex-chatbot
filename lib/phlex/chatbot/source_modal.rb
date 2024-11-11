@@ -6,7 +6,7 @@ module Phlex
       def view_template
         div(
           class: "pcb__source-modal hide-modal",
-          data: { controller: "pcb-source-modal", pcb_source_modal_target: "modal", chatbot_modal_target: "modal" },
+          data: { chatbot_modal_target: "modal" },
         ) do
           div(class: "pcb__source-modal-content") do
             h3(class: "pcb__source-modal-title", data_chatbot_modal_target: "title")

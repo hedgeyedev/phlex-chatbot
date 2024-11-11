@@ -17,10 +17,6 @@ module Phlex
             href: "#",
             class: @classes,
             data: {
-              # action: "click->pcb-chat-messages#showSource:prevent",
-              # pcb_chat_messages_source_title_param: source[:title],
-              # pcb_chat_messages_source_description_param: source[:description],
-              # pcb_chat_messages_source_url_param: source[:url],
               action: "chatbot-modal#show",
               chatbot_modal_title_param: source[:title],
               chatbot_modal_content_param: source[:description],

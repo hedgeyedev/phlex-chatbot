@@ -4,6 +4,8 @@ module Phlex
   module Chatbot
     module Chat
       class Input < Phlex::HTML
+        SELECTOR = "chatbot-input"
+
         include Phlex::Rails::Helpers::TurboFrameTag
         include Phlex::Rails::Helpers::FormWith
 
@@ -12,7 +14,7 @@ module Phlex
         end
 
         def view_template
-          turbo_frame_tag("pcci-form") do
+          turbo_frame_tag(SELECTOR) do
             div(class: "pcb__chat-input") do
               form_with(model: @chat_message, remote: true) do |form|
                 form.text_area(
