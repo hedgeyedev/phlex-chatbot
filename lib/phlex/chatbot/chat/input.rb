@@ -4,9 +4,6 @@ module Phlex
   module Chatbot
     module Chat
       class Input < Phlex::HTML
-        def initialize
-        end
-
         def view_template
           div(class: "pcb__chat-input") do
             form do
