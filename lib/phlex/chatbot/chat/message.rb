@@ -18,6 +18,7 @@ module Phlex
           status_message: nil,
           user_name: nil,
           current_status: nil,
+          controlled: true,
           **_others
         )
           @additional_message_actions = additional_message_actions
@@ -28,6 +29,7 @@ module Phlex
           @status_message             = status_message
           @user_name                  = user_name
           @current_status             = current_status || !!status_message
+          @controlled                 = controlled
         end
 
         def view_template
@@ -38,9 +40,10 @@ module Phlex
           div(
             id: @current_status ? "current_status" : nil,
             class: "pcb__message #{message_class}",
-            data_chatbot_target: "message",
-            data_controller: "chatbot-message",
-            data_chatbot_message_type_value: from_user ? "user" : "bot",
+            data: {
+              pcb_chat_messages_target: ("message" if @controlled),
+              pcb_chat_message_type: from_user ? "user" : "bot",
+            }
           ) do
             div(class: "pcb__status-indicator") { status_message } if status_message
 

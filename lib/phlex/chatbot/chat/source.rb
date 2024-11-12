@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../modals/reference"
+
 module Phlex
   module Chatbot
     module Chat
@@ -12,16 +14,14 @@ module Phlex
           @classes = classes
         end
 
-        def view_template(&block)
-          a(
-            href: "#",
-            class: @classes,
-            data: {
-              action: "chatbot-modal#show",
-              chatbot_modal_title_param: source[:title],
-              chatbot_modal_content_param: source[:description],
-              chatbot_modal_link_param: source[:url],
-            },
+        # Add "Link" action to the modal
+
+        def view_template
+          render Phlex::Chatbot::Modals::Reference.new(
+            title: source[:title],
+            content: source[:description],
+            link: source[:url],
+            classes: @classes,
           ) { "[#{index}]" }
         end
       end

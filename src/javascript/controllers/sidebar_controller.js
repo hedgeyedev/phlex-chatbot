@@ -1,6 +1,7 @@
 // sidebar_controller.js
 import { Controller } from "@hotwired/stimulus"
 
+// Connects to data-controller="pcb-sidebar"
 export default class extends Controller {
   static targets = ["sidebar", "main", "toggleButton"]
   static classes = ['active'];
