@@ -6,7 +6,7 @@ module Phlex
   module Chatbot
     module Chat
       class Messages < Phlex::HTML
-        def initialize(messages:)
+        def initialize(messages: [])
           @messages = messages
         end
 
@@ -16,7 +16,13 @@ module Phlex
             class: "pcb__chat-messages",
             data_controller: "pcb-chat-messages",
           ) do
-            @messages.each { |message| render Message.new(**message.merge(controlled: false)) }
+            if block_given?
+              yield
+            else
+              @messages.each do |message|
+                render Message.new(**message)
+              end
+            end
           end
         end
       end

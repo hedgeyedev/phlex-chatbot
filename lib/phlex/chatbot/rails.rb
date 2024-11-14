@@ -1,9 +1,10 @@
-require_relative "../chatbot"
+# require_relative "../chatbot"
 
 module Phlex
   module Chatbot
     class Engine < ::Rails::Engine
-      config.autoload_paths << "#{__dir__}/../"
+      config.autoload_paths << "#{__dir__}/../../"
+
       initializer "phlex-chatbot.assets" do |app|
         if app.config.respond_to?(:assets)
           app.config.assets.paths << File.expand_path("../../../dist", __dir__)
@@ -13,6 +14,8 @@ module Phlex
           ]
         end
       end
+
+      # TODO: Test if this works without importmap gem
       initializer "phlex-chatbot.importmap", before: "importmap" do |app|
         if app.config.respond_to?(:importmap)
           app.config.importmap.cache_sweepers << File.expand_path("../../../dist", __dir__)

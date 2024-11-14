@@ -9,7 +9,7 @@ module Phlex
             form do
               textarea(placeholder: "Type your message...")
               submit(
-                class: "px-4 py-2 rounded bg-blue-500 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700"
+                class: "px-4 py-2 rounded bg-blue-500 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700",
               ) do
                 "Send"
               end
