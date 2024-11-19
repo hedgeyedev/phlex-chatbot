@@ -15,8 +15,7 @@ export default class extends Controller {
     this.inputTarget.style.height = this.inputTarget.scrollHeight + 'px'
   }
 
-  createNewline() {
-    this.inputTarget.value += '\n';
-    this.resize();
+  submit() {
+    this.element.requestSubmit();
   }
 }
