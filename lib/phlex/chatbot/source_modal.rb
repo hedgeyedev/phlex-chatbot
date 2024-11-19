@@ -14,7 +14,7 @@ module Phlex
               blockquote(class: "pcb__source-modal-quote")
             end
             div(class: "pcb__source-modal-actions") do
-              # This is a slot for actions. "Close" is a default action. We can add more using Ref.
+              # TODO(Chris): Make this a slot for actions. "Close" is a default action. We can add more using Ref.
               a(href: "", target: "_blank", class: "pcb__source-modal-link", data_chatbot_modal_target: "link") { "Visit source" }
 
 
