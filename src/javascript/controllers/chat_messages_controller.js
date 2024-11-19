@@ -5,8 +5,9 @@ export default class extends Controller {
   static targets = ["message"]
 
   connect() {
-    // console.log("pcb ChatMessagesController connected")
-    this.element.lastElementChild.scrollIntoView({ block: "end", inline: "nearest" })
+    if (this.element.lastElementChild) {
+      this.element.lastElementChild.scrollIntoView({ block: "end", inline: "nearest" })
+    }
   }
 
   messageTargetConnected(element) {
