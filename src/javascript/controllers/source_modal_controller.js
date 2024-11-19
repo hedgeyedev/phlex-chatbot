@@ -2,29 +2,27 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="pcb-source-modal"
 export default class extends Controller {
-  static targets = ["modal"]
+  static targets = [
+    "modal",
+    "title",
+    "content",
+    "link"
+  ]
 
-  connect() {
-    document.addEventListener('showSourceModal', this.showModal.bind(this))
-  }
-
-  disconnect() {
-    document.removeEventListener('showSourceModal', this.showModal.bind(this))
-  }
-
-  showModal(event) {
-    const { title, description, url } = event.detail
-
-    this.setTextOrHtml(this.modalTarget.querySelector('.pcb__source-modal-title'), title);
-    this.setTextOrHtml(this.modalTarget.querySelector('.pcb__source-modal-description'), description);
-    this.modalTarget.querySelector('.pcb__source-modal-link').href = url
+  show(event) {
+    event.preventDefault()
+    const { title, content, link } = event.params
+    this.setTextOrHtml(this.titleTarget, title)
+    this.setTextOrHtml(this.contentTarget, content)
+    this.linkTarget.href = link
     this.modalTarget.classList.remove('hide-modal')
   }
 
-  closeModal(event) {
-    this.modalTarget.querySelector('.pcb__source-modal-title').innerText = ""
-    this.modalTarget.querySelector('.pcb__source-modal-description').innerText = ""
-    this.modalTarget.querySelector('.pcb__source-modal-link').href = ""
+  hide(event) {
+    event.preventDefault()
+    this.titleTarget.innerText = ""
+    this.contentTarget.innerText = ""
+    this.linkTarget.href = ""
     this.modalTarget.classList.add('hide-modal')
   }
 

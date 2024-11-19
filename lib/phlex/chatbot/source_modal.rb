@@ -6,20 +6,20 @@ module Phlex
       def view_template
         div(
           class: "pcb__source-modal hide-modal",
-          data: { chatbot_modal_target: "modal" },
+          data: { pcb_source_modal_target: "modal" },
         ) do
           div(class: "pcb__source-modal-content") do
-            h3(class: "pcb__source-modal-title", data_chatbot_modal_target: "title")
-            div(class: "pcb__source-modal-description", data_chatbot_modal_target: "content") do
+            h3(class: "pcb__source-modal-title", data_pcb_source_modal_target: "title")
+            div(class: "pcb__source-modal-description", data_pcb_source_modal_target: "content") do
               blockquote(class: "pcb__source-modal-quote")
             end
             div(class: "pcb__source-modal-actions") do
               # TODO(Chris): Make this a slot for actions. "Close" is a default action. We can add more using Ref.
-              a(href: "", target: "_blank", class: "pcb__source-modal-link", data_chatbot_modal_target: "link") { "Visit source" }
+              a(href: "", target: "_blank", class: "pcb__source-modal-link", data_pcb_source_modal_target: "link") do
+                "Visit source"
+              end
 
-
-
-              button(data: { action: "chatbot-modal#hide" }, class: "pcb__source-modal-close") { "Close" }
+              button(data: { action: "pcb-source-modal#hide" }, class: "pcb__source-modal-close") { "Close" }
             end
           end
         end

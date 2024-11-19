@@ -14,10 +14,10 @@ module Phlex
             href: "#",
             class: @classes,
             data: {
-              action: "chatbot-modal#show",
-              chatbot_modal_title_param: @title,
-              chatbot_modal_content_param: @content,
-              chatbot_modal_link_param: @link,
+              action: "pcb-source-modal#show",
+              pcb_source_modal_title_param: @title,
+              pcb_source_modal_content_param: @content,
+              pcb_source_modal_link_param: @link,
             }, &
           )
         end
