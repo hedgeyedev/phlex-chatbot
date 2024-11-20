@@ -22,12 +22,6 @@ module Phlex
         def view_template
           div(
             **classes("pcb pcb__chat-container", full_page?: "full_page"),
-            data: {
-              controller: "pcb-chat-form pcb-chat-messages",
-              pcb_chat_form_conversation_token_value: @conversation_token,
-              pcb_chat_form_driver_value: @driver,
-              pcb_chat_form_endpoint_value: @endpoint,
-            },
           ) { chat_content! }
 
           templates!

@@ -2,287 +2,290 @@
 @tailwind components;
 @tailwind utilities;
 
-.pcb {
-  @apply bg-white text-black dark:bg-gray-900 dark:text-white;
-}
-
-.pcb__chat-container {
-  @apply flex flex-col h-full;
-  @apply dark:bg-gray-800;
-}
-
-.pcb__chat-input {
-  @apply mt-2 p-4 bg-gray-100 border-t border-gray-200;
-  @apply dark:bg-gray-800 dark:border-gray-700;
-
-  button {
-    @apply px-4 py-2 rounded bg-blue-500 text-white;
-    @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
-    @apply dark:bg-blue-600 dark:hover:bg-blue-700;
+@layer components {
+  .pcb {
+    @apply bg-white text-black dark:bg-gray-900 dark:text-white;
   }
 
-  form {
-    @apply flex items-center space-x-2;
+  .pcb__chat-container {
+    @apply flex flex-col h-full;
+    @apply dark:bg-gray-800;
   }
 
-  textarea {
-    @apply flex-grow mr-2 p-2 border rounded;
-    @apply resize-none focus:outline-none focus:ring-2 focus:ring-blue-500;
-    @apply dark:bg-gray-700 dark:text-white dark:border-gray-600;
+  .pcb__chat-input {
+    @apply mt-2 p-4 bg-gray-100 border-t border-gray-200;
+    @apply dark:bg-gray-800 dark:border-gray-700;
+
+    button {
+      @apply px-4 py-2 rounded bg-blue-500 text-white;
+      @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
+      @apply dark:bg-blue-600 dark:hover:bg-blue-700;
+    }
+
+    form {
+      @apply flex items-center space-x-2;
+    }
+
+    textarea {
+      @apply flex-grow mr-2 p-2 border rounded;
+      @apply resize-none focus:outline-none focus:ring-2 focus:ring-blue-500;
+      @apply dark:bg-gray-700 dark:text-white dark:border-gray-600;
+    }
   }
-}
 
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
-}
-
-.transform.translate-x-full {
-  transform: translateX(100%);
-}
-
-button[data-sidebar-target="toggleButton"] {
-  transition: all 0.3s ease-in-out;
-}
-
-@media (min-width: 768px) {
-  main[data-sidebar-target="main"] {
-    margin-right: 40%;
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
   }
-}
 
-@media (min-width: 1024px) {
-  main[data-sidebar-target="main"] {
-    margin-right: 33.333333%;
+  .transform.translate-x-full {
+    transform: translateX(100%);
   }
-}
 
-@media (max-width: 767px) {
-  [data-sidebar-target="sidebar"].w-full {
-    width: 100% !important;
+  button[data-sidebar-target="toggleButton"] {
+    transition: all 0.3s ease-in-out;
   }
-}
 
-.pcb__chat-messages {
-  @apply flex flex-col space-y-4 p-4;
-  @apply max-h-[100vh] overflow-y-auto;
-  @apply dark:bg-gray-800;
-  @apply flex-grow overflow-y-auto p-4;
-  @apply dark:bg-gray-800;
-}
+  @media (min-width: 768px) {
+    main[data-sidebar-target="main"] {
+      margin-right: 40%;
+    }
+  }
 
-.pcb__connection-error {
-  @apply ring-red-600 ring-4;
-}
+  @media (min-width: 1024px) {
+    main[data-sidebar-target="main"] {
+      margin-right: 33.333333%;
+    }
+  }
 
-.pcb__footnote {
-  @apply cursor-pointer text-blue-500 hover:text-blue-700 mr-2;
-  @apply dark:text-blue-400 dark:hover:text-blue-300;
-}
+  @media (max-width: 767px) {
+    [data-sidebar-target="sidebar"].w-full {
+      width: 100% !important;
+    }
+  }
 
-.pcb__header {
-  @apply bg-white border-b border-gray-200 p-4 flex justify-between items-center;
-  @apply dark:bg-gray-900 dark:border-gray-700;
+  .pcb__chat-messages {
+    @apply flex flex-col space-y-4 p-4;
+    @apply max-h-[100vh] overflow-y-auto;
+    @apply dark:bg-gray-800;
+    @apply flex-grow overflow-y-auto p-4;
+    @apply dark:bg-gray-800;
+  }
 
-  > h1 {
-    @apply text-xl font-bold;
+  .pcb__connection-error {
+    @apply ring-red-600 ring-4;
+  }
+
+  .pcb__footnote {
+    @apply cursor-pointer text-blue-500 hover:text-blue-700 mr-2;
+    @apply dark:text-blue-400 dark:hover:text-blue-300;
+  }
+
+  .pcb__header {
+    @apply bg-white border-b border-gray-200 p-4 flex justify-between items-center;
+    @apply dark:bg-gray-900 dark:border-gray-700;
+
+    > h1 {
+      @apply text-xl font-bold;
+      @apply dark:text-white;
+    }
+
+    > div {
+      @apply flex space-x-2;
+
+      > button {
+        @apply px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm;
+        @apply dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white;
+      }
+    }
+  }
+
+  .pcb__loading-line {
+    @apply mb-2 h-3 bg-gray-400 rounded;
+    @apply dark:bg-gray-600;
+    animation: pulse 1.5s infinite;
+
+    &:nth-child(2) {
+      @apply w-4/5;
+    }
+
+    &:nth-child(3) {
+      @apply w-3/5;
+    }
+
+    &:last-child {
+      @apply mb-0;
+    }
+  }
+
+  .pcb__message {
+    @apply mb-4 p-3 rounded-lg inline-block min-w-[200px] max-w-[70%] transition-opacity duration-500 ease-in-out;
     @apply dark:text-white;
   }
 
-  > div {
-    @apply flex space-x-2;
+  .pcb__message__actions {
+    @apply mt-2 flex space-x-2;
 
-    > button {
-      @apply px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm;
-      @apply dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white;
+    a, button {
+      @apply text-xs text-gray-500 hover:text-gray-700;
+      @apply dark:text-gray-400 dark:hover:text-gray-200;
     }
   }
-}
 
-.pcb__loading-line {
-  @apply mb-2 h-3 bg-gray-400 rounded;
-  @apply dark:bg-gray-600;
-  animation: pulse 1.5s infinite;
-
-  &:nth-child(2) {
-    @apply w-4/5;
+  .pcb__message__bot {
+    @apply bg-gray-100 self-start;
+    @apply dark:bg-gray-700;
   }
 
-  &:nth-child(3) {
-    @apply w-3/5;
+  .pcb__message__bot-loading {
+    @apply bg-gray-100;
+    @apply dark:bg-gray-700;
   }
 
-  &:last-child {
-    @apply mb-0;
+  .pcb__message__bot-appear {
+    animation: fadeIn 0.5s;
   }
-}
 
-.pcb__message {
-  @apply mb-4 p-3 rounded-lg inline-block min-w-[200px] max-w-[70%] transition-opacity duration-500 ease-in-out;
-  @apply dark:text-white;
-}
-
-.pcb__message__actions {
-  @apply mt-2 flex space-x-2;
-
-  a, button {
-    @apply text-xs text-gray-500 hover:text-gray-700;
-    @apply dark:text-gray-400 dark:hover:text-gray-200;
+  .pcb__message__content {
+    @apply text-sm;
+    @apply dark:text-white;
   }
-}
 
-.pcb__message__bot {
-  @apply bg-gray-100 self-start;
-  @apply dark:bg-gray-700;
-}
-
-.pcb__message__bot-loading {
-  @apply bg-gray-100;
-  @apply dark:bg-gray-700;
-}
-
-.pcb__message__bot-appear {
-  animation: fadeIn 0.5s;
-}
-
-.pcb__message__content {
-  @apply text-sm;
-  @apply dark:text-white;
-}
-
-.pcb__message__footnotes {
-  @apply mt-2 text-sm text-gray-500;
-  @apply dark:text-gray-400;
-}
-
-.pcb__message__user {
-  @apply bg-green-100 self-end;
-  @apply dark:bg-green-800;
-}
-
-.pcb__messages {
-  @apply flex-grow overflow-y-auto p-4;
-  @apply dark:bg-gray-800;
-}
-
-.pcb__sidebar {
-  @apply w-full md:w-2/5 lg:w-1/3 border-l border-gray-200;
-  @apply transition-all duration-300 ease-in-out;
-  @apply fixed inset-y-0 right-0 transform;
-}
-
-.pcb__sidebar-activator {
-  @apply fixed z-10 bottom-20 right-4 bg-blue-500 text-white p-2 rounded-full shadow-lg;
-  @apply transition-all duration-300 ease-in-out;
-}
-
-.pcb__sidebar-activator__deactivate {
-  @apply rotate-180 right-2;
-}
-
-.pcb__source-modal {
-  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4;
-}
-
-.pcb__source-modal-content {
-  @apply bg-white dark:bg-gray-800 text-gray-800 dark:text-white p-6 rounded-lg;
-  @apply max-w-2xl w-full max-h-[80%];
-  @apply shadow-xl;
-}
-
-.pcb__source-modal-title {
-  @apply text-2xl font-bold mb-4 text-center;
-}
-
-.pcb__source-modal-description {
-  @apply mb-6;
-}
-
-.pcb__source-modal-quote {
-  @apply border-l-4 border-blue-500 dark:border-blue-400 pl-4 py-2 mb-6;
-  @apply bg-gray-100 dark:bg-gray-700 rounded;
-  @apply font-serif text-lg leading-relaxed; /* Updated: serif font and larger text */
-}
-
-.pcb__source-modal-actions {
-  @apply flex justify-between items-center;
-}
-
-.pcb__source-modal-link {
-  @apply px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors;
-  @apply dark:bg-blue-600 dark:hover:bg-blue-700;
-}
-
-.pcb__source-modal-close {
-  @apply px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors;
-  @apply dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600;
-}
-
-.pcb__status-indicator {
-  @apply text-xs text-gray-500 mb-1;
-  @apply dark:text-gray-400;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.pcb__user-identifier {
-  @apply flex items-center mb-2;
-}
-
-.pcb__user-identifier-avatar {
-  @apply w-8 h-8 rounded-full flex items-center justify-center text-white font-bold mr-2;
-}
-
-.pcb__user-identifier-avatar__bot {
-  @apply bg-blue-500;
-  @apply dark:bg-blue-600;
-}
-
-.pcb__user-identifier-avatar__user {
-  @apply bg-green-500;
-  @apply dark:bg-green-600;
-}
-
-.pcb__user-identifier-name {
-  @apply font-semibold;
-  @apply dark:text-white;
-}
-
-@keyframes fadeIn {
-  from {
-    @apply opacity-0;
+  .pcb__message__footnotes {
+    @apply mt-2 text-sm text-gray-500;
+    @apply dark:text-gray-400;
   }
-  to {
-    @apply opacity-100;
-  }
-}
 
-@keyframes loadingPulse {
-  0%, 100% {
-    @apply opacity-40;
+  .pcb__message__user {
+    @apply bg-green-100 self-end;
+    @apply dark:bg-green-800;
   }
-  50% {
-    @apply opacity-80;
-  }
-}
 
-@keyframes pulse {
-  0%, 100% {
-    @apply opacity-50 scale-[0.98];
+  .pcb__messages {
+    @apply flex-grow overflow-y-auto p-4;
+    @apply dark:bg-gray-800;
   }
-  50% {
-    @apply opacity-100 scale-100;
-  }
-}
 
-@keyframes slideInFromRight {
-  0% {
-    transform: translateX(100%);
-    opacity: 0;
+  .pcb__sidebar {
+    @apply w-full md:w-2/5 lg:w-1/3 border-l border-gray-200;
+    @apply transition-all duration-300 ease-in-out;
+    @apply fixed inset-y-0 right-0 transform;
   }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
+
+  .pcb__sidebar-activator {
+    @apply fixed z-10 bottom-20 right-4 bg-blue-500 text-white p-2 rounded-full shadow-lg;
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .pcb__sidebar-activator__deactivate {
+    @apply rotate-180 right-2;
+  }
+
+  .pcb__source-modal {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4;
+  }
+
+  .pcb__source-modal-content {
+    @apply bg-white dark:bg-gray-800 text-gray-800 dark:text-white p-6 rounded-lg;
+    @apply max-w-2xl w-full max-h-[80%];
+    @apply shadow-xl;
+  }
+
+  .pcb__source-modal-title {
+    @apply text-2xl font-bold mb-4 text-center;
+  }
+
+  .pcb__source-modal-description {
+    @apply mb-6;
+  }
+
+  .pcb__source-modal-quote {
+    @apply border-l-4 border-blue-500 dark:border-blue-400 pl-4 py-2 mb-6;
+    @apply bg-gray-100 dark:bg-gray-700 rounded;
+    @apply font-serif text-lg leading-relaxed;
+    /* Updated: serif font and larger text */
+  }
+
+  .pcb__source-modal-actions {
+    @apply flex justify-between items-center;
+  }
+
+  .pcb__source-modal-link {
+    @apply px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors;
+    @apply dark:bg-blue-600 dark:hover:bg-blue-700;
+  }
+
+  .pcb__source-modal-close {
+    @apply px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors;
+    @apply dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600;
+  }
+
+  .pcb__status-indicator {
+    @apply text-xs text-gray-500 mb-1;
+    @apply dark:text-gray-400;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .pcb__user-identifier {
+    @apply flex items-center mb-2;
+  }
+
+  .pcb__user-identifier-avatar {
+    @apply w-8 h-8 rounded-full flex items-center justify-center text-white font-bold mr-2;
+  }
+
+  .pcb__user-identifier-avatar__bot {
+    @apply bg-blue-500;
+    @apply dark:bg-blue-600;
+  }
+
+  .pcb__user-identifier-avatar__user {
+    @apply bg-green-500;
+    @apply dark:bg-green-600;
+  }
+
+  .pcb__user-identifier-name {
+    @apply font-semibold;
+    @apply dark:text-white;
+  }
+
+  @keyframes fadeIn {
+    from {
+      @apply opacity-0;
+    }
+    to {
+      @apply opacity-100;
+    }
+  }
+
+  @keyframes loadingPulse {
+    0%, 100% {
+      @apply opacity-40;
+    }
+    50% {
+      @apply opacity-80;
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      @apply opacity-50 scale-[0.98];
+    }
+    50% {
+      @apply opacity-100 scale-100;
+    }
+  }
+
+  @keyframes slideInFromRight {
+    0% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
 }
 
@@ -295,63 +298,65 @@ button[data-sidebar-target="toggleButton"] {
 }
 
 /* Full page style messing around */
+@layer components {
 
-.pcb__chat-container.full-page {
-  @apply flex flex-col;
-  @apply bg-gray-100 dark:bg-gray-900 text-black dark:text-white;
-  @apply rounded-lg shadow-xl;
-  @apply my-8 mx-auto;
-  max-width: 900px;
-  height: 85vh;
-}
+  .pcb__chat-container.full-page {
+    @apply flex flex-col;
+    @apply bg-gray-100 dark:bg-gray-900 text-black dark:text-white;
+    @apply rounded-lg shadow-xl;
+    @apply my-8 mx-auto;
+    max-width: 900px;
+    height: 85vh;
+  }
 
-.pcb__chat-container.full-page .pcb__messages {
-  @apply flex-grow overflow-y-auto p-6;
-  @apply space-y-4;
-}
+  .pcb__chat-container.full-page .pcb__messages {
+    @apply flex-grow overflow-y-auto p-6;
+    @apply space-y-4;
+  }
 
-.pcb__chat-container.full-page .pcb__header {
-  @apply bg-white dark:bg-gray-800 text-black dark:text-white p-4 rounded-t-lg;
-  @apply flex justify-between items-center;
-}
+  .pcb__chat-container.full-page .pcb__header {
+    @apply bg-white dark:bg-gray-800 text-black dark:text-white p-4 rounded-t-lg;
+    @apply flex justify-between items-center;
+  }
 
-.pcb__chat-container.full-page .pcb__chat-input {
-  @apply p-4 bg-white dark:bg-gray-800 rounded-b-lg;
-  @apply border-t border-gray-200 dark:border-gray-700;
-}
+  .pcb__chat-container.full-page .pcb__chat-input {
+    @apply p-4 bg-white dark:bg-gray-800 rounded-b-lg;
+    @apply border-t border-gray-200 dark:border-gray-700;
+  }
 
-.pcb__chat-container.full-page .pcb__chat-input textarea {
-  @apply w-full p-2 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white;
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
-}
+  .pcb__chat-container.full-page .pcb__chat-input textarea {
+    @apply w-full p-2 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
 
-.pcb__chat-container.full-page .pcb__chat-input button {
-  @apply mt-0 px-4 py-2 bg-blue-500 text-white rounded;
-  @apply hover:bg-blue-600 transition-colors;
-}
+  .pcb__chat-container.full-page .pcb__chat-input button {
+    @apply mt-0 px-4 py-2 bg-blue-500 text-white rounded;
+    @apply hover:bg-blue-600 transition-colors;
+  }
 
-.pcb__chat-container.full-page .pcb__message {
-  @apply p-3 rounded-lg max-w-[70%];
-  @apply transition-opacity duration-500 ease-in-out;
-}
+  .pcb__chat-container.full-page .pcb__message {
+    @apply p-3 rounded-lg max-w-[70%];
+    @apply transition-opacity duration-500 ease-in-out;
+  }
 
-.pcb__chat-container.full-page .pcb__message__bot {
-  @apply bg-gray-200 dark:bg-gray-700 self-start;
-}
+  .pcb__chat-container.full-page .pcb__message__bot {
+    @apply bg-gray-200 dark:bg-gray-700 self-start;
+  }
 
-.pcb__chat-container.full-page .pcb__message__user {
-  @apply bg-blue-100 dark:bg-blue-600 self-end;
-}
+  .pcb__chat-container.full-page .pcb__message__user {
+    @apply bg-blue-100 dark:bg-blue-600 self-end;
+  }
 
-.pcb__chat-container.full-page .pcb__message__content {
-  @apply text-sm text-black dark:text-white;
-}
+  .pcb__chat-container.full-page .pcb__message__content {
+    @apply text-sm text-black dark:text-white;
+  }
 
-.pcb__chat-container.full-page .pcb__message__actions {
-  @apply mt-2 flex space-x-2;
-}
+  .pcb__chat-container.full-page .pcb__message__actions {
+    @apply mt-2 flex space-x-2;
+  }
 
-.pcb__chat-container.full-page .pcb__message__actions button,
-.pcb__chat-container.full-page .pcb__message__actions a, {
-  @apply text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200;
+  .pcb__chat-container.full-page .pcb__message__actions button,
+  .pcb__chat-container.full-page .pcb__message__actions a, {
+    @apply text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200;
+  }
 }
