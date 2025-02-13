@@ -3,9 +3,7 @@
 module Phlex
   module Chatbot
     class SourceModal < Phlex::HTML
-      def initialize(show_link: false)
-        @show_link = show_link
-      end
+      include Phlex::DeferredRender
 
       def view_template
         div(
@@ -18,21 +16,19 @@ module Phlex
               blockquote(class: "pcb__source-modal-quote")
             end
             div(class: "pcb__source-modal-actions") do
-              # TODO(Chris): Make this a slot for actions. "Close" is a default action. We can add more using Ref.
-
-              if @show_link
-                a(href: "", target: "_blank", class: "pcb__source-modal-link", data_pcb_source_modal_target: "link") do
-                  "Visit source"
-                end
+              if @actions
+                render @actions
+              else
+                render Phlex::Chatbot::Modals::VisitSourceLink.new
+                render Phlex::Chatbot::Modals::CloseButton.new
               end
-
-              # Spacer
-              div
-
-              button(data: { action: "pcb-source-modal#hide" }, class: "pcb__source-modal-close") { "Close" }
             end
           end
         end
+      end
+
+      def actions(&block)
+        @actions = block
       end
     end
   end
