@@ -14,16 +14,22 @@ export default class extends Controller {
     const { title, content, link } = event.params
     this.setTextOrHtml(this.titleTarget, title)
     this.setTextOrHtml(this.contentTarget, content)
-    this.linkTarget.href = link
     this.modalTarget.classList.remove('hide-modal')
+
+    if (this.hasLinkTarget) {
+      this.linkTarget.href = link;
+    }
   }
 
   hide(event) {
     event.preventDefault()
     this.titleTarget.innerText = ""
     this.contentTarget.innerText = ""
-    this.linkTarget.href = ""
     this.modalTarget.classList.add('hide-modal')
+
+    if (this.hasLinkTarget) {
+      this.linkTarget.href = "";
+    }
   }
 
   setTextOrHtml(element, text) {
