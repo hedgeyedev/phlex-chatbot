@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    phlex-chatbot (0.3.4)
+    phlex-chatbot (0.3.5)
       phlex (~> 1.10)
 
 GEM
