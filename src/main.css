@@ -120,7 +120,7 @@
   }
 
   .pcb__message {
-    @apply mb-4 p-3 rounded-lg inline-block min-w-[200px] max-w-[70%] transition-opacity duration-500 ease-in-out;
+    @apply mb-4 p-3 rounded-lg inline-block min-w-[200px] max-w-[90%] sm:max-w-[70%] transition-opacity duration-500 ease-in-out;
     @apply dark:text-white;
   }
 
