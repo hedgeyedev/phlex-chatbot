@@ -12,11 +12,20 @@ GEM
     foreman (0.88.1)
     json (2.7.2)
     language_server-protocol (3.17.0.3)
+    nokogiri (1.18.10-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.18.10-x86_64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.18.10-x86_64-linux-gnu)
+      racc (~> 1.4)
     parallel (1.26.3)
     parser (3.3.4.2)
       ast (~> 2.4.1)
       racc
     phlex (1.11.0)
+    phlex-testing-nokogiri (0.1.0)
+      nokogiri (~> 1.13)
+      phlex (>= 0.5)
     racc (1.8.1)
     rainbow (3.1.1)
     rake (13.2.1)
@@ -66,6 +75,7 @@ PLATFORMS
 DEPENDENCIES
   foreman (~> 0.88.1)
   phlex-chatbot!
+  phlex-testing-nokogiri
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 1.65)
