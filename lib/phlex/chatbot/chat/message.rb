@@ -7,6 +7,7 @@ module Phlex
     module Chat
       class Message < Phlex::HTML
         include Phlex::DeferredRender
+        include Phlex::Rails::Helpers::Sanitize
 
         attr_reader :avatar, :from_user, :message, :user_name
 
