@@ -53,7 +53,6 @@ module Phlex
             if @body
               render @body
             else
-              # Default to safe output - escape HTML to prevent XSS
               # Subclasses can override this method to render HTML if needed (e.g., for bot messages with markdown)
               plain message
             end
