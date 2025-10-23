@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "action_view"
+
 require_relative "user_identifier"
 
 module Phlex
@@ -7,7 +9,7 @@ module Phlex
     module Chat
       class Message < Phlex::HTML
         include Phlex::DeferredRender
-        include Phlex::Rails::Helpers::Sanitize
+        include ActionView::Helpers::SanitizeHelper
 
         attr_reader :avatar, :from_user, :message, :user_name
 
@@ -55,7 +57,7 @@ module Phlex
               render @body
             else
               # Subclasses can override this method to render HTML if needed (e.g., for bot messages with markdown)
-              sanitize message
+              unsafe_raw sanitize(message)
             end
           end
         end
