@@ -53,7 +53,8 @@ module Phlex
             if @body
               render @body
             else
-              unsafe_raw message
+              # Subclasses can override this method to render HTML if needed (e.g., for bot messages with markdown)
+              plain message
             end
           end
         end
