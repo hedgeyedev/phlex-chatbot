@@ -7,7 +7,6 @@ module Phlex
     module Chat
       class Message < Phlex::HTML
         include Phlex::DeferredRender
-        include Phlex::Rails::Helpers::Sanitize
 
         attr_reader :avatar, :from_user, :message, :user_name
 
@@ -70,6 +69,14 @@ module Phlex
 
         def footer(&block)
           @footer = block
+        end
+
+        def sanitize(content)
+          if defined?(Phlex::Rails::Helpers::Sanitize)
+            Phlex::Rails::Helpers::Sanitize.sanitize(content)
+          else
+            content.to_s.gsub(/<[^>]*>/, '')
+          end
         end
       end
     end
