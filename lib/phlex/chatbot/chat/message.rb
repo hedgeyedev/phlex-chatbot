@@ -54,7 +54,7 @@ module Phlex
               render @body
             else
               # Subclasses can override this method to render HTML if needed (e.g., for bot messages with markdown)
-              plain message
+              sanitize message
             end
           end
         end
