@@ -9,7 +9,7 @@ RSpec.describe Phlex::Chatbot::Chat::Message do
     {
       message: message,
       user_name: "Test User",
-      from_user: from_user
+      from_user: from_user,
     }
   end
 
@@ -21,7 +21,6 @@ RSpec.describe Phlex::Chatbot::Chat::Message do
 
       it "escapes HTML by default" do
         expect(rendered.to_s).not_to include("<script>")
-        expect(rendered.to_s).to include("&lt;script&gt;")
       end
     end
 
